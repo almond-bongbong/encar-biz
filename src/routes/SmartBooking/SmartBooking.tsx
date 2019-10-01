@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { LocationPointer } from 'icons';
 import { useHistory } from 'react-router-dom';
 import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
@@ -48,12 +47,17 @@ const TabWrapper = styled(FloorTab)`
   }
 `;
 
-const Arrow = styled(LocationPointer)`
+const Marker = styled.div`
   position: absolute;
   top: 10%;
   left: 20%;
-  width: 50px;
-  height: 50px;
+  width: 140px;
+  padding: 60px 10px;
+  background-color: rgba(22,23,246,0.69);
+  color: #fff;
+  font-size: 24px;
+  text-align: center;
+  cursor: pointer;
 `;
 
 const ButtonsWrapper = styled.div`
@@ -96,14 +100,15 @@ const SmartBooking: React.FC = () => {
           src="http://www.digipine.com/files/attach/images/1072/605/026/992a89f4ef1944f906d3f81cdc2ee177.png"
           alt=""
         />
-        <Arrow />
+        <Marker onClick={submitBooking}>
+          지금바로
+          <br />
+          이용가능
+        </Marker>
       </MapArea>
       <ButtonsWrapper>
-        <Button theme="blue" height={50} onClick={submitBooking} width={100}>
-          좋아
-        </Button>
-        <Button height={50} onClick={() => {}} width={100}>
-          싫어
+        <Button height={50} onClick={() => {}} width={200}>
+          다른 회의실
         </Button>
       </ButtonsWrapper>
     </Content>

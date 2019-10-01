@@ -26,7 +26,13 @@ const BookingResult: React.FC = () => {
         <p>
           지금 <em>산토리니</em> 예약완료!
         </p>
-        <div style={{ marginTop: 30, padding: '30px 30px 200px', backgroundColor: '#eee' }}>
+        <div
+          style={{
+            marginTop: 30,
+            padding: '30px 30px 200px',
+            backgroundColor: '#eee',
+          }}
+        >
           예약 정보
         </div>
       </Recommend>
