@@ -8,6 +8,9 @@
     "@types/react-dom": "16.9.1",
     "@types/react-router-dom": "^5.1.0",
     "@types/styled-components": "^4.1.19",
+    "eslint": "6.1.0",
+    "eslint-config-airbnb": "18.0.1",
+    "moment": "^2.24.0",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",
     "react-router-dom": "^5.1.2",
@@ -22,19 +25,18 @@
     "@typescript-eslint/parser": "^2.3.2",
     "eslint-config-prettier": "^6.3.0",
     "eslint-config-react": "^1.1.7",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.1",
-    "prettier": "^1.18.2",
-    "tslint": "^5.20.0",
-    "tslint-config-airbnb": "^5.11.2",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-react": "^4.1.0"
+    "eslint-plugin-react": "^7.14.3",
+    "eslint-plugin-react-hooks": "^1.7.0",
+    "prettier": "^1.18.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint:fix": "eslint './src/**/*.{ts,tsx}'"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

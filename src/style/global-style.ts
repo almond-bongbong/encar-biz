@@ -9,6 +9,7 @@ export default createGlobalStyle`
   }
   body {
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    color: #333;
   }
   a {
     color: inherit;
