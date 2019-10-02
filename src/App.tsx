@@ -12,6 +12,19 @@ const Content = styled.div`
   max-width: 100%;
   margin: 0 auto;
   padding: 40px 20px;
+
+  & > div {
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0.3;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const App: React.FC = () => {
