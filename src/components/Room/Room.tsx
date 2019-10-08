@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import ModalPopup from '../ModalPopup';
 
 interface ContainerProps {
   x: number;
@@ -12,7 +13,6 @@ interface ContainerProps {
 
 interface RoomProps extends ContainerProps {
   name: string;
-  onClick?: () => void;
 }
 
 const Container = styled.div<ContainerProps>`
@@ -47,8 +47,18 @@ const Room: React.FC<RoomProps> = ({
   y,
   width,
   height,
-  onClick,
 }) => {
+  const [showDetail, setShowDetail] = useState<boolean>(false);
+
+  const handleDetail = (): void => {
+    setShowDetail(true);
+  };
+
+  const handleClosePopup = (): void => {
+    console.log('hide');
+    setShowDetail(false);
+  };
+
   return (
     <Container
       inUse={inUse}
@@ -57,9 +67,12 @@ const Room: React.FC<RoomProps> = ({
       y={y}
       width={width}
       height={height}
-      onClick={onClick}
+      onClick={handleDetail}
     >
       <Title>{name}</Title>
+      <ModalPopup show={showDetail} keyPressESC={handleClosePopup}>
+        상세 정보
+      </ModalPopup>
     </Container>
   );
 };

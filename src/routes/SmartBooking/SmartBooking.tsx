@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
 import 'moment/locale/ko';
@@ -88,9 +87,9 @@ const MEETING_ROOM = [
 
 const SmartBooking: React.FC = () => {
   const [selectedFloor, setSelectedFloor] = useState<selectedFloor>(18);
-  const history = useHistory();
   const [recommendedRoom, setRecommendedRoom] = useState<number>(2);
   const nowTime = moment().format(`A h시 m분`);
+  const selectedRoom = MEETING_ROOM.find(r => r.id === recommendedRoom);
 
   const handleRecommend = (): void => {
     const id = Math.floor(Math.random() * 4);
@@ -99,10 +98,6 @@ const SmartBooking: React.FC = () => {
 
   const handleFloor = (value: selectedFloor): void => {
     setSelectedFloor(value);
-  };
-
-  const submitBooking = (): void => {
-    history.push('/booking/1');
   };
 
   return (
@@ -114,9 +109,11 @@ const SmartBooking: React.FC = () => {
       />
       <Recommend>
         <div className="time">{nowTime}</div>
-        <p>
-          지금 <em>하와이</em> 어때?
-        </p>
+        {selectedRoom && (
+          <p>
+            지금 <em>{selectedRoom.name}</em> 어때?
+          </p>
+        )}
       </Recommend>
       <MapArea>
         <img
@@ -133,9 +130,6 @@ const SmartBooking: React.FC = () => {
             height={room.height}
             inUse={room.inUse}
             recommended={room.id === recommendedRoom}
-            onClick={
-              room.id === recommendedRoom ? submitBooking : (): void => {}
-            }
           />
         ))}
       </MapArea>
