@@ -29,7 +29,7 @@ const Container = styled.div<ContainerProps>`
       ? 'rgba(255, 0, 0, 0.4)'
       : recommended
       ? 'rgba(0, 255, 0, 0.6)'
-      : 'rgba(0, 0, 0, 0.2)'};
+      : 'rgba(0, 255, 0, 0.6)'};
   text-align: center;
   cursor: pointer;
 `;
@@ -37,6 +37,10 @@ const Container = styled.div<ContainerProps>`
 const Title = styled.div`
   font-size: 16px;
   color: ${({ theme }): string => theme.white};
+`;
+
+const RoomDetail = styled.div`
+  background-color: #fff;
 `;
 
 const Room: React.FC<RoomProps> = ({
@@ -71,7 +75,15 @@ const Room: React.FC<RoomProps> = ({
     >
       <Title>{name}</Title>
       <ModalPopup show={showDetail} keyPressESC={handleClosePopup}>
-        상세 정보
+        <RoomDetail>
+          <div>{name}</div>
+          <ul>
+            <li>10:00 ~ 11:00 위클리</li>
+            <li>11:00 ~ 11:30 프로젝트 회의</li>
+            <li>13:00 ~ 16:00 파트 회의</li>
+            <li>16:00 ~ 18:00 미팅</li>
+          </ul>
+        </RoomDetail>
       </ModalPopup>
     </Container>
   );
