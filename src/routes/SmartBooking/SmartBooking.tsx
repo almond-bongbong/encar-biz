@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import 'moment/locale/ko';
 import moment from 'moment';
 import Button from 'components/Button';
+import Room from '../../components/Room/Room';
 
 type selectedFloor = string | number;
 
@@ -47,24 +48,6 @@ const TabWrapper = styled(FloorTab)`
   }
 `;
 
-interface MarkerProps {
-  x: number;
-  y: number;
-}
-
-const Marker = styled.div<MarkerProps>`
-  position: absolute;
-  top: ${(props): number => props.y}%;
-  left: ${(props): number => props.x}%;
-  width: 140px;
-  padding: 60px 10px;
-  background-color: rgba(22, 23, 246, 0.69);
-  color: #fff;
-  font-size: 24px;
-  text-align: center;
-  cursor: pointer;
-`;
-
 const ButtonsWrapper = styled.div`
   text-align: center;
 
@@ -75,16 +58,43 @@ const ButtonsWrapper = styled.div`
   }
 `;
 
+const MEETING_ROOM = [
+  { id: 0, name: '발리', x: 130, y: 40, width: 110, height: 160, inUse: true },
+  {
+    id: 1,
+    name: '코나키나발루',
+    x: 130,
+    y: 200,
+    width: 110,
+    height: 160,
+  },
+  {
+    id: 2,
+    name: '오키나와',
+    x: 130,
+    y: 360,
+    width: 110,
+    height: 140,
+  },
+  {
+    id: 3,
+    name: '하와이',
+    x: 535,
+    y: 330,
+    width: 160,
+    height: 170,
+  },
+];
+
 const SmartBooking: React.FC = () => {
   const [selectedFloor, setSelectedFloor] = useState<selectedFloor>(18);
   const history = useHistory();
-  const [x, setX] = useState(20);
-  const [y, setY] = useState(20);
+  const [recommendedRoom, setRecommendedRoom] = useState<number>(2);
   const nowTime = moment().format(`A h시 m분`);
 
-  const handleLocation = (): void => {
-    setX(Math.floor(Math.random() * 80));
-    setY(Math.floor(Math.random() * 80));
+  const handleRecommend = (): void => {
+    const id = Math.floor(Math.random() * 4);
+    setRecommendedRoom(id);
   };
 
   const handleFloor = (value: selectedFloor): void => {
@@ -105,7 +115,7 @@ const SmartBooking: React.FC = () => {
       <Recommend>
         <div className="time">{nowTime}</div>
         <p>
-          지금 <em>산토리니</em> 어때?
+          지금 <em>하와이</em> 어때?
         </p>
       </Recommend>
       <MapArea>
@@ -113,14 +123,24 @@ const SmartBooking: React.FC = () => {
           src="http://www.digipine.com/files/attach/images/1072/605/026/992a89f4ef1944f906d3f81cdc2ee177.png"
           alt=""
         />
-        <Marker onClick={submitBooking} x={x} y={y}>
-          지금바로
-          <br />
-          이용가능
-        </Marker>
+        {MEETING_ROOM.map(room => (
+          <Room
+            key={room.id}
+            name={room.name}
+            x={room.x}
+            y={room.y}
+            width={room.width}
+            height={room.height}
+            inUse={room.inUse}
+            recommended={room.id === recommendedRoom}
+            onClick={
+              room.id === recommendedRoom ? submitBooking : (): void => {}
+            }
+          />
+        ))}
       </MapArea>
       <ButtonsWrapper>
-        <Button height={50} onClick={handleLocation} width={200}>
+        <Button height={50} onClick={handleRecommend} width={200}>
           다른 회의실
         </Button>
       </ButtonsWrapper>
