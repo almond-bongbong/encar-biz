@@ -55,6 +55,7 @@ const Room: React.FC<RoomProps> = ({
   const [showDetail, setShowDetail] = useState<boolean>(false);
 
   const handleDetail = (): void => {
+    console.log('defaul?');
     setShowDetail(true);
   };
 
@@ -64,17 +65,24 @@ const Room: React.FC<RoomProps> = ({
   };
 
   return (
-    <Container
-      inUse={inUse}
-      recommended={recommended}
-      x={x}
-      y={y}
-      width={width}
-      height={height}
-      onClick={handleDetail}
-    >
-      <Title>{name}</Title>
-      <ModalPopup show={showDetail} keyPressESC={handleClosePopup}>
+    <>
+      <Container
+        inUse={inUse}
+        recommended={recommended}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        onClick={handleDetail}
+      >
+        <Title>{name}</Title>
+      </Container>
+
+      <ModalPopup
+        show={showDetail}
+        keyPressESC={handleClosePopup}
+        onClickDim={handleClosePopup}
+      >
         <RoomDetail>
           <div>{name}</div>
           <ul>
@@ -85,7 +93,7 @@ const Room: React.FC<RoomProps> = ({
           </ul>
         </RoomDetail>
       </ModalPopup>
-    </Container>
+    </>
   );
 };
 
