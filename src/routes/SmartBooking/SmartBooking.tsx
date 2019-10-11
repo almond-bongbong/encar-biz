@@ -61,11 +61,11 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
         items={[{ value: '18', label: '18층' }, { value: '19', label: '19층' }]}
       />
       <Recommend>
-        <div className="time">{nowTime}</div>
         <p>
           지금 <em>산토리니</em> 어때?
         </p>
       </Recommend>
+      <input type="text" />
       <Slider {...SLIDER_SETTINGS}>
         <FloorMap rooms={MEETING_ROOM_18} />
         <FloorMap rooms={MEETING_ROOM_19} />

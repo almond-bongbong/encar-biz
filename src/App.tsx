@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import GlobalStyle from './style/global-style';
 import SmartBooking from 'routes/SmartBooking';
 import BookingResult from 'routes/BookingResult';
 import styled, { ThemeProvider } from 'styled-components';
 import { theme } from 'style/theme';
+import CounterContainer from 'components/Counter/CounterContainer';
 
 const Content = styled.div`
   position: relative;
@@ -34,6 +35,7 @@ const App: React.FC = () => {
         <GlobalStyle />
         <Content>
           <LoggedInRoutes />
+          <CounterContainer />
         </Content>
       </BrowserRouter>
     </ThemeProvider>
