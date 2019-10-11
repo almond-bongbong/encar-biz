@@ -4,10 +4,10 @@ import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
 import 'moment/locale/ko';
 import moment from 'moment';
-import Map18 from 'components/Map18';
-import Map19 from 'components/Map19';
+import FloorMap from 'components/FloorMap';
 import Slider from 'react-slick';
-import SliderArrow from '../../components/SliderArrow';
+import SliderArrow from 'components/SliderArrow';
+import { MEETING_ROOM_18, MEETING_ROOM_19 } from 'constants/meetingRoom';
 
 type selectedFloor = string | number;
 
@@ -67,8 +67,8 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
         </p>
       </Recommend>
       <Slider {...SLIDER_SETTINGS}>
-        <Map18 />
-        <Map19 />
+        <FloorMap rooms={MEETING_ROOM_18} />
+        <FloorMap rooms={MEETING_ROOM_19} />
       </Slider>
     </Content>
   );

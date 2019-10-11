@@ -1,4 +1,4 @@
-export const MEETING_ROOM = [
+export const MEETING_ROOM_18 = [
   { id: 0, name: '발리', x: 130, y: 40, width: 110, height: 160, inUse: true },
   {
     id: 1,
@@ -23,5 +23,17 @@ export const MEETING_ROOM = [
     y: 330,
     width: 160,
     height: 170,
+  },
+];
+
+export const MEETING_ROOM_19 = [
+  {
+    id: 0,
+    name: '산토리니',
+    x: 130,
+    y: 40,
+    width: 110,
+    height: 160,
+    inUse: true,
   },
 ];
