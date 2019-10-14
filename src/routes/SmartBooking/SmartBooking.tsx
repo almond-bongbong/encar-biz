@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { RouteComponentProps, useParams } from 'react-router-dom';
 import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
@@ -40,8 +40,10 @@ const TabWrapper = styled(FloorTab)`
 `;
 
 const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
+  const accDirectionValue = useRef<number>(0);
+  const direction = useRef<'UP' | 'DOWN' | null>(null);
   const { floor } = useParams();
-  const slierIndex = floor === '18' ? 0 : 1;
+  const slierIndex = floor === '19' ? 1 : 0;
   const slider = useRef<Slider>(null);
   const nowTime = moment().format(`A h시 m분`);
   const SLIDER_SETTINGS = useMemo<Settings>(
@@ -57,6 +59,39 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
     }),
     [slierIndex, history],
   );
+
+  const handleWheel = useCallback((e: WheelEvent) => {
+    if (e.deltaY > 0) {
+      if (direction.current === 'DOWN') {
+        accDirectionValue.current = 0;
+      }
+      direction.current = 'UP';
+    } else if (e.deltaY < 0) {
+      if (direction.current === 'UP') {
+        accDirectionValue.current = 0;
+      }
+      direction.current = 'DOWN';
+    }
+
+    accDirectionValue.current += e.deltaY;
+
+    if (accDirectionValue.current < -100) {
+      accDirectionValue.current = 0;
+      console.log('DOWN');
+    }
+    if (accDirectionValue.current > 100) {
+      accDirectionValue.current = 0;
+      console.log('UP');
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener('wheel', handleWheel);
+
+    return (): void => {
+      window.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   useEffect(() => {
     if (slider.current) {
