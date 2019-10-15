@@ -45,6 +45,36 @@ const TabWrapper = styled(FloorTab)`
   }
 `;
 
+enum CalcType {
+  PLUS,
+  MINUS,
+}
+
+const calcRoundMinutes = (
+  time: Moment,
+  step: number,
+  calcType: CalcType,
+): Moment => {
+  const minutes = parseInt(time.format('mm'), 10);
+
+  if (minutes % step === 0) {
+    const diff = calcType === CalcType.PLUS ? 30 : -30;
+    return time.clone().add(diff, 'minutes');
+  } else {
+    const diff =
+      calcType === CalcType.PLUS
+        ? Math.ceil(minutes / 30) * 30 - minutes
+        : -(minutes - Math.floor(minutes / 30) * 30);
+    return time.clone().add(diff, 'minutes');
+  }
+};
+
+const add30Minutes = (time: Moment): Moment =>
+  calcRoundMinutes(time, 30, CalcType.PLUS);
+
+const minus30Minutes = (time: Moment): Moment =>
+  calcRoundMinutes(time, 30, CalcType.MINUS);
+
 const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
   const [time, setTime] = useState<Moment>(moment());
   const accDirectionValue = useRef<number>(0);
@@ -52,7 +82,6 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
   const { floor } = useParams();
   const slierIndex = floor === '19' ? 1 : 0;
   const slider = useRef<Slider>(null);
-  // const nowTime = moment().format(`A h시 m분`);
   const SLIDER_SETTINGS = useMemo<Settings>(
     () => ({
       infinite: false,
@@ -85,31 +114,13 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
     if (accDirectionValue.current < -100) {
       accDirectionValue.current = 0;
       console.log('DOWN');
-
-      setTime(prev => {
-        const minutes = prev.format('mm');
-        if (minutes === '30' || minutes === '00') {
-          return prev.clone().add(-30, 'minutes');
-        } else {
-          const ceil = parseInt(minutes, 10);
-          return prev.clone().add(-ceil, 'minutes');
-        }
-      });
+      setTime(minus30Minutes);
     }
 
     if (accDirectionValue.current > 100) {
       accDirectionValue.current = 0;
       console.log('UP');
-
-      setTime(prev => {
-        const minutes = prev.format('mm');
-        if (minutes === '30' || minutes === '00') {
-          return prev.clone().add(30, 'minutes');
-        } else {
-          const ceil = parseInt(minutes, 10);
-          return prev.clone().add(ceil, 'minutes');
-        }
-      });
+      setTime(add30Minutes);
     }
   }, []);
 
