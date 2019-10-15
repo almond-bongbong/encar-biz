@@ -1,9 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { RouteComponentProps, useParams } from 'react-router-dom';
 import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
+import moment, { Moment } from 'moment';
 import 'moment/locale/ko';
-import moment from 'moment';
 import FloorMap from 'components/FloorMap';
 import Slider, { Settings } from 'react-slick';
 import SliderArrow from 'components/SliderArrow';
@@ -40,12 +46,13 @@ const TabWrapper = styled(FloorTab)`
 `;
 
 const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
+  const [time, setTime] = useState<Moment>(moment());
   const accDirectionValue = useRef<number>(0);
   const direction = useRef<'UP' | 'DOWN' | null>(null);
   const { floor } = useParams();
   const slierIndex = floor === '19' ? 1 : 0;
   const slider = useRef<Slider>(null);
-  const nowTime = moment().format(`A h시 m분`);
+  // const nowTime = moment().format(`A h시 m분`);
   const SLIDER_SETTINGS = useMemo<Settings>(
     () => ({
       infinite: false,
@@ -78,10 +85,31 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
     if (accDirectionValue.current < -100) {
       accDirectionValue.current = 0;
       console.log('DOWN');
+
+      setTime(prev => {
+        const minutes = prev.format('mm');
+        if (minutes === '30' || minutes === '00') {
+          return prev.clone().add(-30, 'minutes');
+        } else {
+          const ceil = parseInt(minutes, 10);
+          return prev.clone().add(-ceil, 'minutes');
+        }
+      });
     }
+
     if (accDirectionValue.current > 100) {
       accDirectionValue.current = 0;
       console.log('UP');
+
+      setTime(prev => {
+        const minutes = prev.format('mm');
+        if (minutes === '30' || minutes === '00') {
+          return prev.clone().add(30, 'minutes');
+        } else {
+          const ceil = parseInt(minutes, 10);
+          return prev.clone().add(ceil, 'minutes');
+        }
+      });
     }
   }, []);
 
@@ -111,7 +139,7 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
         items={[{ value: '18', label: '18층' }, { value: '19', label: '19층' }]}
       />
       <Recommend>
-        <div className="time">{nowTime}</div>
+        <div className="time">{time.format(`A h시 m분`)}</div>
         <p>
           지금 <em>산토리니</em> 어때?
         </p>
