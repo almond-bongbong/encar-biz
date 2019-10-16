@@ -124,13 +124,24 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
     }
   }, []);
 
+  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    if (e.code === 'ArrowUp') {
+      setTime(add30Minutes);
+    }
+    if (e.code === 'ArrowDown') {
+      setTime(minus30Minutes);
+    }
+  }, []);
+
   useEffect(() => {
     window.addEventListener('wheel', handleWheel);
+    window.addEventListener('keydown', handleKeyPress);
 
     return (): void => {
       window.removeEventListener('wheel', handleWheel);
+      window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [handleWheel]);
+  }, [handleWheel, handleKeyPress]);
 
   useEffect(() => {
     if (slider.current) {
