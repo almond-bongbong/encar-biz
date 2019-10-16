@@ -7,6 +7,9 @@ export default createGlobalStyle`
   * {
     box-sizing: border-box;
   }
+  html {
+    touch-action: manipulation;
+  }
   body {
     font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
     color: #333;
@@ -18,6 +21,11 @@ export default createGlobalStyle`
   }
   input,
   button {
+    padding: 0;
+    border: 0;
+    background-color: transparent;
+    cursor: pointer;
+    -webkit-tap-highlight-color:  rgba(255, 255, 255, 0); 
     &:focus,
     &:active {
       outline: 0;

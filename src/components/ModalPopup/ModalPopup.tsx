@@ -59,7 +59,7 @@ const PopupContent = styled.div<PopupContentProps>`
     display: inline-block;
     padding: 20px;
     border-radius: 6px;
-    background-color: #444;
+    background-color: rgba(50, 50, 50, 0.95);
     box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.2);
     text-align: center;
 
