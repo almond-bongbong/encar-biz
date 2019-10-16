@@ -15,7 +15,7 @@ import Slider, { Settings } from 'react-slick';
 import SliderArrow from 'components/SliderArrow';
 import { MEETING_ROOM_18, MEETING_ROOM_19 } from 'constants/meetingRoom';
 
-type selectedFloor = string | number;
+type SelectedFloor = string | number;
 
 const Content = styled.div``;
 
@@ -77,8 +77,6 @@ const minus30Minutes = (time: Moment): Moment =>
 
 const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
   const [time, setTime] = useState<Moment>(moment());
-  const accDirectionValue = useRef<number>(0);
-  const direction = useRef<'UP' | 'DOWN' | null>(null);
   const { floor } = useParams();
   const slierIndex = floor === '19' ? 1 : 0;
   const slider = useRef<Slider>(null);
@@ -96,35 +94,9 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
     [slierIndex, history],
   );
 
-  const handleWheel = useCallback((e: WheelEvent) => {
-    if (e.deltaY > 0) {
-      if (direction.current === 'DOWN') {
-        accDirectionValue.current = 0;
-      }
-      direction.current = 'UP';
-    } else if (e.deltaY < 0) {
-      if (direction.current === 'UP') {
-        accDirectionValue.current = 0;
-      }
-      direction.current = 'DOWN';
-    }
-
-    accDirectionValue.current += e.deltaY;
-
-    if (accDirectionValue.current < -100) {
-      accDirectionValue.current = 0;
-      console.log('DOWN');
-      setTime(minus30Minutes);
-    }
-
-    if (accDirectionValue.current > 100) {
-      accDirectionValue.current = 0;
-      console.log('UP');
-      setTime(add30Minutes);
-    }
-  }, []);
-
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
+    e.preventDefault();
+
     if (e.code === 'ArrowUp') {
       setTime(add30Minutes);
     }
@@ -134,14 +106,12 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
   }, []);
 
   useEffect(() => {
-    window.addEventListener('wheel', handleWheel);
     window.addEventListener('keydown', handleKeyPress);
 
     return (): void => {
-      window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyPress);
     };
-  }, [handleWheel, handleKeyPress]);
+  }, [handleKeyPress]);
 
   useEffect(() => {
     if (slider.current) {
@@ -149,7 +119,7 @@ const SmartBooking: React.FC<RouteComponentProps> = ({ history }) => {
     }
   }, [floor, slierIndex]);
 
-  const handleFloor = (value: selectedFloor): void => {
+  const handleFloor = (value: SelectedFloor): void => {
     history.push(`/${value}`);
   };
 
