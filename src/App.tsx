@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import GlobalStyle from './style/global-style';
-import SmartBooking from 'routes/SmartBooking';
-import BookingResult from 'routes/BookingResult';
+import Reservation from 'routes/Reservation';
+import ReservationResult from 'routes/ReservationResult';
 import styled, { ThemeProvider } from 'styled-components';
 import { theme } from 'style/theme';
 
@@ -42,8 +42,8 @@ const App: React.FC = () => {
 
 const LoggedInRoutes: React.FC = () => (
   <Switch>
-    <Route path="/:floor?" component={SmartBooking} />
-    <Route path="/booking/:bookingId" component={BookingResult} />
+    <Route exact path="/:floor?" component={Reservation} />
+    <Route path="/reservation/:reservationId" component={ReservationResult} />
   </Switch>
 );
 

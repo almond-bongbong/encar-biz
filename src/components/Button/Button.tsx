@@ -1,9 +1,9 @@
 import React from 'react';
 import styled, { css, SimpleInterpolation } from 'styled-components';
 
-interface Props {
+interface ButtonProps {
   inline?: boolean;
-  theme?: 'white' | 'gray' | 'red' | 'blue';
+  color?: 'white' | 'gray' | 'red' | 'blue';
   width?: number | string;
   height?: 30 | 40 | 50;
   loading?: boolean;
@@ -37,7 +37,7 @@ const ButtonWrapper = styled.div<ButtonWrapperProps>`
     height: ${(props): number => props.height}px;
     padding: 0 20px;
     border: 1px solid #ddd;
-    border-radius: 2px;
+    border-radius: 4px;
     outline: 0;
     font-size: 16px;
     cursor: pointer;
@@ -92,9 +92,9 @@ const ButtonWrapper = styled.div<ButtonWrapperProps>`
   }
 `;
 
-const Button: React.FC<Props> = ({
+const Button: React.FC<ButtonProps> = ({
   children,
-  theme = 'white',
+  color = 'white',
   width = 'auto',
   height = 40,
   inline = true,
@@ -105,7 +105,7 @@ const Button: React.FC<Props> = ({
   return (
     <ButtonWrapper
       data-testid="button-wrap"
-      color={theme}
+      color={color}
       width={width}
       height={height}
       inline={inline}

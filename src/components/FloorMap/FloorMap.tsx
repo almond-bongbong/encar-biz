@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import Room from '../Room/Room';
+import Room from 'components/Room';
+import { RESERVATIONS } from 'constants/dummyData';
+import { useSelector } from 'react-redux';
+import { RootState } from 'store';
 
 const Container = styled.div`
   padding: 20px;
@@ -19,33 +22,40 @@ const MapArea = styled.div`
   }
 `;
 
-interface Room {
-  id: number;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
 interface FloorProps {
-  rooms: Room[];
+  rooms: {
+    id: number;
+    name: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }[];
 }
 
 const FloorMap: React.FC<FloorProps> = ({ rooms }) => {
+  const selectedRoomId = useSelector(
+    (state: RootState) => state.reservation.selectedRoomId,
+  );
+
   return (
     <Container>
       <MapArea>
-        {rooms.map(room => (
-          <Room
-            key={room.name}
-            name={room.name}
-            x={room.x}
-            y={room.y}
-            width={room.width}
-            height={room.height}
-          />
-        ))}
+        {rooms.map(room => {
+          return (
+            <Room
+              key={room.id}
+              id={room.id}
+              name={room.name}
+              x={room.x}
+              y={room.y}
+              width={room.width}
+              height={room.height}
+              selected={room.id === selectedRoomId}
+              meetings={RESERVATIONS.filter(r => r.roomId === room.id)}
+            />
+          );
+        })}
       </MapArea>
     </Container>
   );

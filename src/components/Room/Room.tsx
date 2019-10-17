@@ -1,6 +1,11 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import styled from 'styled-components';
-import ModalPopup from '../ModalPopup';
+import ModalPopup from 'components/ModalPopup';
+import { Meeting } from 'types';
+import moment from 'moment';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from 'store';
+import { selectRoom } from '../../store/reservation';
 
 interface ContainerProps {
   x: number;
@@ -12,7 +17,10 @@ interface ContainerProps {
 }
 
 interface RoomProps extends ContainerProps {
+  id: number;
   name: string;
+  meetings: Meeting[];
+  selected: boolean;
 }
 
 const Container = styled.div<ContainerProps>`
@@ -39,43 +47,91 @@ const Title = styled.div`
   color: ${({ theme }): string => theme.white};
 `;
 
+const CurrentMeeting = styled.div`
+  margin-top: 8px;
+  font-size: 14px;
+
+  & > em {
+    color: darkblue;
+    font-weight: 700;
+  }
+`;
+
+const Marker = styled.div`
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  font-size: 30px;
+  transform: translate(-50%, -50%);
+`;
+
 const RoomDetail = styled.div`
   background-color: #fff;
 `;
 
 const Room: React.FC<RoomProps> = ({
+  id,
   name,
-  inUse,
   recommended,
   x,
   y,
   width,
   height,
+  meetings,
+  selected,
 }) => {
+  const dispatch = useDispatch();
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const selectedDateTime = useSelector(
+    (state: RootState) => state.reservation.selectedDateTime,
+  );
+  const currentMeeting = useMemo(() => {
+    return meetings.find(r => {
+      const start = moment(r.start);
+      const end = moment(r.end);
 
-  const handleDetail = (): void => {
-    console.log('defaul?');
+      return r.roomId === id && moment(selectedDateTime).isBetween(start, end);
+    });
+  }, [id, meetings, selectedDateTime]);
+
+  const handleShowPopup = (): void => {
     setShowDetail(true);
   };
 
   const handleClosePopup = (): void => {
-    console.log('hide');
     setShowDetail(false);
+  };
+
+  const handleSelectRoom = (): void => {
+    dispatch(selectRoom(id));
   };
 
   return (
     <>
       <Container
-        inUse={inUse}
+        inUse={!!currentMeeting}
         recommended={recommended}
         x={x}
         y={y}
         width={width}
         height={height}
-        onClick={handleDetail}
+        onClick={handleSelectRoom}
       >
         <Title>{name}</Title>
+
+        {currentMeeting && (
+          <CurrentMeeting>
+            <em>{currentMeeting.title}</em> 진행중
+          </CurrentMeeting>
+        )}
+
+        {selected && (
+          <Marker>
+            <span role={'img'} aria-label={'선택된 회의실'}>
+              📍
+            </span>
+          </Marker>
+        )}
       </Container>
 
       <ModalPopup

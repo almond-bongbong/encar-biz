@@ -16,7 +16,7 @@ const Recommend = styled.div`
   }
 `;
 
-const BookingResult: React.FC = () => {
+const ReservationResult: React.FC = () => {
   const nowTime = moment().format(`A h시 m분`);
 
   return (
@@ -40,4 +40,4 @@ const BookingResult: React.FC = () => {
   );
 };
 
-export default BookingResult;
+export default ReservationResult;
