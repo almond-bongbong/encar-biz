@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "ismobilejs": "^1.0.3",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "react": "^16.10.1",
@@ -22,16 +23,17 @@
     "typescript": "3.6.3"
   },
   "devDependencies": {
+    "@types/ismobilejs": "^0.4.1",
     "@types/jest": "24.0.18",
+    "@types/lodash": "^4.14.144",
     "@types/node": "12.7.8",
+    "@types/react": "^16.9.4",
     "@types/react-dom": "16.9.1",
     "@types/react-redux": "^7.1.4",
     "@types/react-router-dom": "^5.1.0",
+    "@types/react-slick": "^0.23.4",
     "@types/react-transition-group": "^4.2.2",
     "@types/styled-components": "^4.1.19",
-    "@types/react": "^16.9.4",
-    "@types/react-slick": "^0.23.4",
-    "@types/lodash": "^4.14.144",
     "@typescript-eslint/eslint-plugin": "^2.3.2",
     "@typescript-eslint/parser": "^2.3.2",
     "eslint": "6.1.0",

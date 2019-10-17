@@ -1,11 +1,16 @@
 import React, { Fragment } from 'react';
-import styled from 'styled-components';
+import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
 import _ from 'lodash';
 import CustomScroll from 'react-custom-scroll';
 import 'react-custom-scroll/dist/customScroll.css';
+import isMobileDetector from 'lib/isMobileDetector';
 
 interface TimeSelectProps {
   onSelectTime: (time: string) => void;
+}
+
+interface TimeProps {
+  isMobile: boolean;
 }
 
 const Container = styled.div`
@@ -19,7 +24,7 @@ const Content = styled.div`
   height: 300px;
 `;
 
-const Time = styled.button`
+const Time = styled.button<TimeProps>`
   display: block;
   width: 100%;
   padding: 10px;
@@ -31,16 +36,20 @@ const Time = styled.button`
   text-align: center;
   cursor: pointer;
 
-  @media screen and (min-width: 768px) {
-    &:hover {
-      background-color: rgba(40, 40, 40, 0.9);
-    }
-  }
+  ${({ isMobile }): FlattenSimpleInterpolation | false =>
+    !isMobile &&
+    css`
+      &:hover {
+        background-color: rgba(40, 40, 40, 0.9);
+      }
+    `}
 
   &:active {
     background-color: rgba(200, 200, 200, 0.2);
   }
 `;
+
+const isMobile = isMobileDetector();
 
 const TimeSelect: React.FC<TimeSelectProps> = ({ onSelectTime }) => {
   return (
@@ -51,9 +60,11 @@ const TimeSelect: React.FC<TimeSelectProps> = ({ onSelectTime }) => {
             <Fragment key={hour}>
               <Time
                 onClick={(): void => onSelectTime(`${hour}:30`)}
+                isMobile={isMobile}
               >{`${hour}:30`}</Time>
               <Time
                 onClick={(): void => onSelectTime(`${hour}:00`)}
+                isMobile={isMobile}
               >{`${hour}:00`}</Time>
             </Fragment>
           ))}
