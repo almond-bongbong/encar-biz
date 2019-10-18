@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import ModalPopup from 'components/ModalPopup';
 import { Meeting } from 'types';
@@ -69,6 +70,12 @@ const RoomDetail = styled.div`
   background-color: #fff;
 `;
 
+const Tooltip = styled.div`
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0 2px 3px 4px rgba(0, 0, 0, 0.1);
+`;
+
 const Room: React.FC<RoomProps> = ({
   id,
   name,
@@ -82,6 +89,7 @@ const Room: React.FC<RoomProps> = ({
 }) => {
   const dispatch = useDispatch();
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [showTooltip, setShowTooltip] = useState<boolean>(false);
   const selectedDateTime = useSelector(
     (state: RootState) => state.reservation.selectedDateTime,
   );
@@ -106,6 +114,10 @@ const Room: React.FC<RoomProps> = ({
     dispatch(selectRoom(id));
   };
 
+  const handleHover = (): void => {
+    setShowTooltip(true);
+  };
+
   return (
     <>
       <Container
@@ -115,6 +127,7 @@ const Room: React.FC<RoomProps> = ({
         y={y}
         width={width}
         height={height}
+        onMouseOver={handleHover}
         onClick={handleSelectRoom}
       >
         <Title>{name}</Title>
@@ -149,6 +162,8 @@ const Room: React.FC<RoomProps> = ({
           </ul>
         </RoomDetail>
       </ModalPopup>
+
+      {/*{showTooltip && createPortal(<Tooltip>대충 내용이 보여지는 곳</Tooltip>, )}*/}
     </>
   );
 };

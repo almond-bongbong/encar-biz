@@ -78,8 +78,7 @@ const PopupContent = styled.div<PopupContentProps>`
   }
 `;
 
-const popupContainer = document.getElementById('popup_container');
-if (!popupContainer) addRootElement(createElement('popup_container'));
+addRootElement('popup_container');
 
 const ModalPopup: React.FC<ModalPopupProps> = ({
   show = false,
