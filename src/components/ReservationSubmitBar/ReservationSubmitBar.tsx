@@ -15,11 +15,19 @@ const Container = styled.div`
   bottom: 0;
   left: 0;
   padding: 30px 50px;
+  background-color: #fff;
   box-shadow: 0 -3px 5px 1px rgba(0, 0, 0, 0.1);
 `;
 
 const Name = styled.div`
   font-size: 20px;
+`;
+
+const InfoButton = styled(Button)`
+  position: absolute;
+  top: 50%;
+  right: 160px;
+  transform: translateY(-50%);
 `;
 
 const SubmitButton = styled(Button)`
@@ -42,11 +50,16 @@ const ReservationSubmitBar: React.FC<ReservationSubmitBarProps> = ({
       {selectedRoom && (
         <>
           <Name>{selectedRoom.name}</Name>
+          <InfoButton color={'gray'} onClick={onSubmit}>
+            회의실 정보보기
+          </InfoButton>
           <SubmitButton color={'red'} onClick={onSubmit}>
             예약하기
           </SubmitButton>
         </>
       )}
+
+
     </Container>
   );
 };

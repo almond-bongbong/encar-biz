@@ -7,9 +7,9 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
-import { addRootElement, createElement } from 'lib/generateElement';
+import { addRootElement } from 'lib/generateElement';
 import { createPortal } from 'react-dom';
 
 interface PopupContentProps {
@@ -52,7 +52,6 @@ const PopupContent = styled.div<PopupContentProps>`
     bottom: 0;
     left: 0;
     z-index: 10000;
-    background-color: rgba(0, 0, 0, 0.4);
     text-align: center;
   }
   & .content {
@@ -71,14 +70,14 @@ const PopupContent = styled.div<PopupContentProps>`
           `
         : css`
             position: absolute;
-            top: 50%;
+            top: 30px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, 0);
           `}
   }
 `;
 
-addRootElement('popup_container');
+addRootElement('popup-container');
 
 const ModalPopup: React.FC<ModalPopupProps> = ({
   show = false,
@@ -91,7 +90,7 @@ const ModalPopup: React.FC<ModalPopupProps> = ({
   const [hasScroll, setHasScroll] = useState(false);
 
   useEffect(() => {
-    const popupParent = document.getElementById('popup_container');
+    const popupParent = document.getElementById('popup-container');
 
     if (popupParent) {
       popupParent.appendChild(popupEl);

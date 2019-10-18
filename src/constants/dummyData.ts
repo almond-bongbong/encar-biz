@@ -2,8 +2,8 @@ export const RESERVATIONS = [
   {
     roomId: 0,
     title: '발리 첫번째 위클리',
-    start: '2019-10-17 10:00',
-    end: '2019-10-17 11:00',
+    start: '2019-10-18 10:00',
+    end: '2019-10-18 19:00',
   },
   {
     roomId: 0,

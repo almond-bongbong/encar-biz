@@ -100,13 +100,13 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
 
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {
-      e.preventDefault();
-
       if (e.code === 'ArrowUp') {
         dispatch(add30Minutes());
+        e.preventDefault();
       }
       if (e.code === 'ArrowDown') {
         dispatch(minus30Minutes());
+        e.preventDefault();
       }
     },
     [dispatch],
