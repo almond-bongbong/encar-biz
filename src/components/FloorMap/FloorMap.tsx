@@ -14,12 +14,6 @@ const MapArea = styled.div`
   margin-top: 50px;
   padding-top: 75%;
   background-color: #ddd;
-
-  img {
-    display: block;
-    width: 100%;
-    margin: 0 auto;
-  }
 `;
 
 interface FloorProps {

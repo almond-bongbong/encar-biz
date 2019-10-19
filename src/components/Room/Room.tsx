@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
 import styled from 'styled-components';
 import ModalPopup from 'components/ModalPopup';
 import { Meeting } from 'types';
 import moment from 'moment';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store';
-import { selectRoom } from '../../store/reservation';
+import { selectRoom } from 'store/reservation';
+import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
 
 interface ContainerProps {
   x: number;
@@ -58,12 +58,24 @@ const CurrentMeeting = styled.div`
   }
 `;
 
-const Marker = styled.div`
+const Marker = styled.img`
+  display: block;
   position: absolute;
   left: 50%;
   top: 50%;
-  font-size: 30px;
+  width: 50px;
+  font-size: 20px;
   transform: translate(-50%, -50%);
+  animation: point 0.5s infinite alternate;
+
+  @keyframes point {
+    from {
+      margin-top: -15px;
+    }
+    to {
+      margin-top: 0;
+    }
+  }
 `;
 
 const RoomDetail = styled.div`
@@ -138,13 +150,7 @@ const Room: React.FC<RoomProps> = ({
           </CurrentMeeting>
         )}
 
-        {selected && (
-          <Marker>
-            <span role={'img'} aria-label={'선택된 회의실'}>
-              📍
-            </span>
-          </Marker>
-        )}
+        {selected && <Marker src={redArrowDown} alt="" />}
       </Container>
 
       <ModalPopup

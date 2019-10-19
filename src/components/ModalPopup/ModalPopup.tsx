@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
-import { addRootElement, createElement } from 'lib/generateElement';
+import { addRootElement } from 'lib/generateElement';
 import { createPortal } from 'react-dom';
 
 interface PopupContentProps {
