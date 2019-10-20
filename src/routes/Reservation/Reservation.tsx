@@ -1,4 +1,5 @@
 import React, {
+  FormEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -8,13 +9,12 @@ import React, {
 import { RouteComponentProps, useParams } from 'react-router-dom';
 import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import 'moment/locale/ko';
 import { MEETING_ROOMS } from 'constants/meetingRoom';
 import FloorMap from 'components/FloorMap';
 import Slider, { Settings } from 'react-slick';
 import SliderArrow from 'components/SliderArrow';
-import ModalPopup from 'components/ModalPopup';
 import TimeSelect from 'components/TimeSelect';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -26,22 +26,53 @@ import {
 import { DATETIME_FORMAT } from 'types';
 import { RootState } from 'store';
 import ReservationSubmitBar from 'components/ReservationSubmitBar';
+import { SingleDatePicker } from 'react-dates';
 
 type SelectedFloor = string | number;
 
 const Content = styled.div``;
 
-const Recommend = styled.div`
-  font-size: 32px;
+const TimeSelectContainer = styled.div`
+  position: absolute;
+  top: 50px;
+  left: 0;
+  z-index: 100;
+  background-color: #fff;
+  box-shadow: 0 2px 4px 5px rgba(100, 100, 100, 0.1);
+`;
 
-  p {
-    margin-top: 10px;
+const DatePickerWrapper = styled.div`
+  display: inline-block;
+  margin: -10px 0 0 10px;
+  vertical-align: middle;
 
-    em {
-      margin: 0 5px;
-      font-size: 40px;
-      text-decoration: underline;
-    }
+  & .DateInput {
+    width: 140px;
+  }
+
+  & .DateInput_input {
+    color: inherit;
+    font-weight: 400;
+    font-size: 22px;
+  }
+
+  & .DateInput_fang {
+    margin-top: 1px;
+  }
+`;
+
+const RecommendArea = styled.div`
+  position: relative;
+`;
+
+const Recommend = styled.p`
+  margin-top: 10px;
+  font-size: 28px;
+
+  em {
+    margin: 0 5px;
+    font-size: 40px;
+    text-decoration: underline;
   }
 `;
 
@@ -60,6 +91,7 @@ const TabWrapper = styled(FloorTab)`
   position: absolute;
   top: 50px;
   right: 20px;
+  z-index: 10;
 
   @media screen and (max-width: 768px) {
     position: static;
@@ -70,6 +102,7 @@ const TabWrapper = styled(FloorTab)`
 
 const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const [showTimeSelect, setShowTimeSelect] = useState<boolean>(false);
+  const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const selectedRoomId = useSelector(
     (state: RootState) => state.reservation.selectedRoomId,
   );
@@ -134,23 +167,31 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     history.push(`/${value}`);
   };
 
-  const handleShowSelectTime = (): void => {
-    setShowTimeSelect(true);
-  };
-
-  const handleHideSelectTime = (): void => {
-    setShowTimeSelect(false);
+  const handleCloseCalendar = (event: FormEvent): void => {
+    console.log(event.target, event.currentTarget);
   };
 
   const handleTime = (selectedTime: string): void => {
     const [hour, minutes] = selectedTime.split(':');
-    const newTime = selectedDateTimeMoment
+    const newDateTime = selectedDateTimeMoment
       .set('hours', parseInt(hour, 10))
       .set('minutes', parseInt(minutes, 10))
       .format(DATETIME_FORMAT);
 
-    dispatch(selectDateTime(newTime));
+    dispatch(selectDateTime(newDateTime));
     setShowTimeSelect(false);
+  };
+
+  const handleDate = (selectedDate: Moment | null): void => {
+    if (selectedDate) {
+      const newDateTime = selectedDate
+        .set('hours', selectedDateTimeMoment.get('hours'))
+        .set('minutes', selectedDateTimeMoment.get('minutes'))
+        .format(DATETIME_FORMAT);
+      dispatch(selectDateTime(newDateTime));
+    }
+
+    setShowCalendar(false);
   };
 
   const handleSubmit = (): void => {
@@ -165,30 +206,55 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
         items={[{ value: '18', label: '18층' }, { value: '19', label: '19층' }]}
       />
 
-      <Recommend>
-        <TimeButton type={'button'} onClick={handleShowSelectTime}>
+      <RecommendArea>
+        <TimeButton
+          type={'button'}
+          onFocus={(): void => setShowTimeSelect(true)}
+          onBlur={(): void => setShowTimeSelect(false)}
+        >
           {selectedDateTimeMoment.format(`A h시 m분`)}
         </TimeButton>
-        <DateButton>{selectedDateTimeMoment.format('YYYY.MM.DD')}</DateButton>
+
+        {/*<DateButton
+          onFocus={(): void => setShowCalendar(true)}
+          onBlur={handleCloseCalendar}
+        >
+          {selectedDateTimeMoment.format('YYYY.MM.DD')}
+        </DateButton>*/}
+
+        <DatePickerWrapper>
+          <SingleDatePicker
+            id={'datepicker'}
+            date={selectedDateTimeMoment}
+            onDateChange={handleDate}
+            focused={showCalendar}
+            onFocusChange={({ focused }): void => setShowCalendar(!!focused)}
+            hideKeyboardShortcutsPanel={true}
+            monthFormat={'YYYY MMMM'}
+            displayFormat={'YYYY.MM.DD'}
+            numberOfMonths={1}
+            noBorder={true}
+            readOnly
+          />
+        </DatePickerWrapper>
+
         {selectedRoom && (
-          <p>
+          <Recommend>
             지금 <em>{selectedRoom.name}</em> 어때?
-          </p>
+          </Recommend>
         )}
-      </Recommend>
+
+        {showTimeSelect && (
+          <TimeSelectContainer>
+            <TimeSelect onSelectTime={handleTime} />
+          </TimeSelectContainer>
+        )}
+      </RecommendArea>
 
       <Slider ref={slider} {...SLIDER_SETTINGS}>
         <FloorMap rooms={MEETING_ROOMS.filter(r => r.floor === 18)} />
         <FloorMap rooms={MEETING_ROOMS.filter(r => r.floor === 19)} />
       </Slider>
-
-      <ModalPopup
-        show={showTimeSelect}
-        onClickDim={handleHideSelectTime}
-        keyPressESC={handleHideSelectTime}
-      >
-        <TimeSelect onSelectTime={handleTime} />
-      </ModalPopup>
 
       <ReservationSubmitBar onSubmit={handleSubmit} />
     </Content>

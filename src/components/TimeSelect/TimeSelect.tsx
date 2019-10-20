@@ -15,7 +15,7 @@ interface TimeProps {
 
 const Container = styled.div`
   & .rcs-custom-scroll .rcs-inner-handle {
-    background-color: rgba(30, 30, 30, 0.8);
+    background-color: rgba(30, 30, 30, 0.6);
   }
 `;
 
@@ -29,8 +29,6 @@ const Time = styled.button<TimeProps>`
   width: 100%;
   padding: 10px;
   border: 0;
-  background-color: transparent;
-  color: #fff;
   text-shadow: 0 1px 2px 3px rgba(255, 255, 255, 0.2);
   font-size: 20px;
   text-align: center;
@@ -40,7 +38,7 @@ const Time = styled.button<TimeProps>`
     !isMobile &&
     css`
       &:hover {
-        background-color: rgba(40, 40, 40, 0.9);
+        background-color: rgba(40, 40, 40, 0.1);
       }
     `}
 
@@ -59,11 +57,11 @@ const TimeSelect: React.FC<TimeSelectProps> = ({ onSelectTime }) => {
           {_.range(9, 19).map(hour => (
             <Fragment key={hour}>
               <Time
-                onClick={(): void => onSelectTime(`${hour}:30`)}
+                onMouseDown={(): void => onSelectTime(`${hour}:30`)}
                 isMobile={isMobile}
               >{`${hour}:30`}</Time>
               <Time
-                onClick={(): void => onSelectTime(`${hour}:00`)}
+                onMouseDown={(): void => onSelectTime(`${hour}:00`)}
                 isMobile={isMobile}
               >{`${hour}:00`}</Time>
             </Fragment>

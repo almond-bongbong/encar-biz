@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'store';
 import { selectRoom } from 'store/reservation';
 import Tooltip from 'components/Tooltip';
+import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
 
 interface ContainerProps {
   x: number;
@@ -58,12 +59,24 @@ const CurrentMeeting = styled.div`
   }
 `;
 
-const Marker = styled.div`
+const Marker = styled.img`
+  display: block;
   position: absolute;
   left: 50%;
   top: 50%;
-  font-size: 30px;
+  width: 50px;
+  font-size: 20px;
   transform: translate(-50%, -50%);
+  animation: point 0.5s infinite alternate;
+
+  @keyframes point {
+    from {
+      margin-top: -15px;
+    }
+    to {
+      margin-top: 0;
+    }
+  }
 `;
 
 const RoomDetail = styled.div`
@@ -126,14 +139,7 @@ const Room: React.FC<RoomProps> = ({
               <em>{currentMeeting.title}</em> 진행중
             </CurrentMeeting>
           )}
-
-          {selected && (
-            <Marker>
-              <span role={'img'} aria-label={'선택된 회의실'}>
-                📍
-              </span>
-            </Marker>
-          )}
+          {selected && <Marker src={redArrowDown} alt="" />}
         </Container>
       </Tooltip>
 
