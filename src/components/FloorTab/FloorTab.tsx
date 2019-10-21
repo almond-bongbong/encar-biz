@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css, SimpleInterpolation } from 'styled-components';
 
 type valueType = string | number;
 
@@ -24,12 +24,16 @@ const TabWrapper = styled.div`
 
 const TabButton = styled.button<TabButtonProps>`
   display: inline-block;
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  color: ${(props): string => (props.active ? '#fff' : '#333')};
-  background-color: ${(props): string => (props.active ? '#333' : '#fff')};
-  font-size: 20px;
+  padding: 10px;
+  color: ${(props): string => (props.active ? '#333' : '#777')};
+  font-size: 28px;
   cursor: pointer;
+  ${(props): SimpleInterpolation =>
+    props.active
+      ? css`
+          text-decoration: underline;
+        `
+      : ''}
 
   & + & {
     border-left: 0;

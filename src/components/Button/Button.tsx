@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled, { css, SimpleInterpolation } from 'styled-components';
+import Loader from '../Loader';
 
 interface ButtonProps {
   inline?: boolean;
@@ -102,6 +103,11 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   className,
 }) => {
+  const loaderTheme = useMemo(() => (color === 'white' ? 'red' : 'white'), [
+    color,
+  ]);
+  const loaderSize = useMemo(() => height / 2, [height]);
+
   return (
     <ButtonWrapper
       data-testid="button-wrap"
@@ -112,7 +118,9 @@ const Button: React.FC<ButtonProps> = ({
       className={className}
     >
       {loading ? (
-        <button type="button">loading...</button>
+        <button type="button">
+          <Loader color={loaderTheme} size={loaderSize} />
+        </button>
       ) : (
         <button type="button" onClick={onClick}>
           <span>{children}</span>

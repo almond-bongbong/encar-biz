@@ -1,12 +1,12 @@
 import React, {
-  FormEvent,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { RouteComponentProps, useParams } from 'react-router-dom';
+import qs from 'query-string';
+import { RouteComponentProps, useLocation } from 'react-router-dom';
 import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
 import moment, { Moment } from 'moment';
@@ -25,7 +25,6 @@ import {
 } from 'store/reservation';
 import { DATETIME_FORMAT } from 'types';
 import { RootState } from 'store';
-import ReservationSubmitBar from 'components/ReservationSubmitBar';
 import { SingleDatePicker } from 'react-dates';
 
 type SelectedFloor = string | number;
@@ -42,8 +41,8 @@ const TimeSelectContainer = styled.div`
 `;
 
 const DatePickerWrapper = styled.div`
-  display: inline-block;
-  margin: -10px 0 0 10px;
+  display: block;
+  margin-bottom: 15px;
   vertical-align: middle;
 
   & .DateInput {
@@ -51,7 +50,8 @@ const DatePickerWrapper = styled.div`
   }
 
   & .DateInput_input {
-    color: inherit;
+    padding: 0;
+    color: #444;
     font-weight: 400;
     font-size: 22px;
   }
@@ -76,15 +76,9 @@ const Recommend = styled.p`
   }
 `;
 
-const DateButton = styled.button`
-  display: inline-block;
-  margin: 0 0 5px 20px;
-  font-size: 22px;
-`;
-
 const TimeButton = styled.button`
   display: inline-block;
-  font-size: 30px;
+  font-size: 34px;
 `;
 
 const TabWrapper = styled(FloorTab)`
@@ -113,22 +107,32 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const selectedDateTimeMoment = useMemo(() => moment(selectedDateTime), [
     selectedDateTime,
   ]);
-  const { floor } = useParams();
+  const { search } = useLocation();
+  const { floor } = qs.parse(search);
   const slierIndex = floor === '18' ? 0 : 1;
   const slider = useRef<Slider>(null);
   const dispatch = useDispatch();
+
+  const changeFloor = useCallback(
+    (floor: SelectedFloor): void => {
+      history.push(`/?floor=${floor}`);
+    },
+    [history],
+  );
+
   const SLIDER_SETTINGS = useMemo<Settings>(
     () => ({
+      speed: 400,
       infinite: false,
       initialSlide: slierIndex,
       prevArrow: <SliderArrow direction={'left'} />,
       nextArrow: <SliderArrow direction={'right'} />,
       afterChange: (currentSlide: number): void => {
         const newFloor = currentSlide === 0 ? '18' : '19';
-        history.push(`/${newFloor}`);
+        changeFloor(newFloor);
       },
     }),
-    [slierIndex, history],
+    [slierIndex, changeFloor],
   );
 
   const handleKeyPress = useCallback(
@@ -163,14 +167,6 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     }
   }, [floor, slierIndex]);
 
-  const handleFloor = (value: SelectedFloor): void => {
-    history.push(`/${value}`);
-  };
-
-  const handleCloseCalendar = (event: FormEvent): void => {
-    console.log(event.target, event.currentTarget);
-  };
-
   const handleTime = (selectedTime: string): void => {
     const [hour, minutes] = selectedTime.split(':');
     const newDateTime = selectedDateTimeMoment
@@ -194,34 +190,15 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     setShowCalendar(false);
   };
 
-  const handleSubmit = (): void => {
-    history.push('/reservation/1');
-  };
-
   return (
     <Content>
       <TabWrapper
-        value={floor || '18'}
-        onClick={handleFloor}
+        value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
+        onClick={changeFloor}
         items={[{ value: '18', label: '18층' }, { value: '19', label: '19층' }]}
       />
 
       <RecommendArea>
-        <TimeButton
-          type={'button'}
-          onFocus={(): void => setShowTimeSelect(true)}
-          onBlur={(): void => setShowTimeSelect(false)}
-        >
-          {selectedDateTimeMoment.format(`A h시 m분`)}
-        </TimeButton>
-
-        {/*<DateButton
-          onFocus={(): void => setShowCalendar(true)}
-          onBlur={handleCloseCalendar}
-        >
-          {selectedDateTimeMoment.format('YYYY.MM.DD')}
-        </DateButton>*/}
-
         <DatePickerWrapper>
           <SingleDatePicker
             id={'datepicker'}
@@ -237,6 +214,14 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
             readOnly
           />
         </DatePickerWrapper>
+
+        <TimeButton
+          type={'button'}
+          onFocus={(): void => setShowTimeSelect(true)}
+          onBlur={(): void => setShowTimeSelect(false)}
+        >
+          {selectedDateTimeMoment.format(`A h시 m분`)}
+        </TimeButton>
 
         {selectedRoom && (
           <Recommend>
@@ -255,8 +240,6 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
         <FloorMap rooms={MEETING_ROOMS.filter(r => r.floor === 18)} />
         <FloorMap rooms={MEETING_ROOMS.filter(r => r.floor === 19)} />
       </Slider>
-
-      <ReservationSubmitBar onSubmit={handleSubmit} />
     </Content>
   );
 };

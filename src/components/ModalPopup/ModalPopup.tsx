@@ -52,13 +52,12 @@ const PopupContent = styled.div<PopupContentProps>`
     bottom: 0;
     left: 0;
     z-index: 10000;
+    background-color: rgba(0, 0, 0, 0.2);
     text-align: center;
   }
   & .content {
     display: inline-block;
-    padding: 20px;
     border-radius: 6px;
-    background-color: rgba(50, 50, 50, 0.95);
     box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, 0.2);
     text-align: center;
 
@@ -70,9 +69,9 @@ const PopupContent = styled.div<PopupContentProps>`
           `
         : css`
             position: absolute;
-            top: 30px;
+            top: 50%;
             left: 50%;
-            transform: translate(-50%, 0);
+            transform: translate(-50%, -50%);
           `}
   }
 `;
@@ -148,7 +147,6 @@ const ModalPopup: React.FC<ModalPopupProps> = ({
                     className="mask"
                     role="presentation"
                     onClick={handleClickDim}
-                    title="팝업닫기"
                   >
                     <div className="content" ref={contentRef}>
                       {children}

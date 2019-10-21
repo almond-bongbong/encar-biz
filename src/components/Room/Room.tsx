@@ -3,11 +3,11 @@ import styled from 'styled-components';
 import ModalPopup from 'components/ModalPopup';
 import { Meeting } from 'types';
 import moment from 'moment';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'store';
-import { selectRoom } from 'store/reservation';
-import Tooltip from 'components/Tooltip';
 import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
+import RoomDetail from '../RoomDetail';
+import ReservationResult from '../ReservationResult';
 
 interface ContainerProps {
   x: number;
@@ -79,10 +79,6 @@ const Marker = styled.img`
   }
 `;
 
-const RoomDetail = styled.div`
-  background-color: #fff;
-`;
-
 const Room: React.FC<RoomProps> = ({
   id,
   name,
@@ -94,8 +90,9 @@ const Room: React.FC<RoomProps> = ({
   meetings,
   selected,
 }) => {
-  const dispatch = useDispatch();
   const [showDetail, setShowDetail] = useState<boolean>(false);
+  const [showResult, setShowResult] = useState<boolean>(false);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const selectedDateTime = useSelector(
     (state: RootState) => state.reservation.selectedDateTime,
   );
@@ -108,55 +105,60 @@ const Room: React.FC<RoomProps> = ({
     });
   }, [id, meetings, selectedDateTime]);
 
-  const handleShowPopup = (): void => {
+  const handleShowDetailPopup = (): void => {
     setShowDetail(true);
   };
 
-  const handleClosePopup = (): void => {
+  const handleCloseDetailPopup = (): void => {
     setShowDetail(false);
   };
 
-  const handleSelectRoom = (): void => {
-    dispatch(selectRoom(id));
+  const handleCloseResultPopup = (): void => {
+    setShowResult(false);
+  };
+
+  const handleReservation = (): void => {
+    setSubmitLoading(true);
+
+    setTimeout(() => {
+      setShowResult(true);
+      setSubmitLoading(false);
+      setShowDetail(false);
+    }, 100);
   };
 
   return (
     <>
-      <Tooltip content={'대충 내용이라는 글'}>
-        <Container
-          inUse={!!currentMeeting}
-          recommended={recommended}
-          x={x}
-          y={y}
-          width={width}
-          height={height}
-          onClick={handleShowPopup}
-        >
-          <Title>{name}</Title>
-
-          {currentMeeting && (
-            <CurrentMeeting>
-              <em>{currentMeeting.title}</em> 진행중
-            </CurrentMeeting>
-          )}
-          {selected && <Marker src={redArrowDown} alt="" />}
-        </Container>
-      </Tooltip>
-
-      <ModalPopup
-        show={showDetail}
-        keyPressESC={handleClosePopup}
-        onClickDim={handleClosePopup}
+      <Container
+        inUse={!!currentMeeting}
+        recommended={recommended}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        onClick={handleShowDetailPopup}
       >
-        <RoomDetail>
-          <div>{name}</div>
-          <ul>
-            <li>10:00 ~ 11:00 위클리</li>
-            <li>11:00 ~ 11:30 프로젝트 회의</li>
-            <li>13:00 ~ 16:00 파트 회의</li>
-            <li>16:00 ~ 18:00 미팅</li>
-          </ul>
-        </RoomDetail>
+        <Title>{name}</Title>
+
+        {currentMeeting && (
+          <CurrentMeeting>
+            <em>{currentMeeting.title}</em> 진행중
+          </CurrentMeeting>
+        )}
+        {selected && <Marker src={redArrowDown} alt="" />}
+      </Container>
+
+      <ModalPopup show={showDetail} onClickDim={handleCloseDetailPopup}>
+        <RoomDetail
+          selectedDate={moment(selectedDateTime).format('YYYY.MM.DD')}
+          roomName={name}
+          submitLoading={submitLoading}
+          onClickReservation={handleReservation}
+        />
+      </ModalPopup>
+
+      <ModalPopup show={showResult} onClickDim={handleCloseResultPopup}>
+        <ReservationResult />
       </ModalPopup>
     </>
   );

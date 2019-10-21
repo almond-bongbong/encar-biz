@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import GlobalStyle from './style/global-style';
+import GlobalStyle from 'style/global-style';
 import Reservation from 'routes/Reservation';
+import MyPage from 'routes/MyPage';
 import ReservationResult from 'routes/ReservationResult';
 import styled, { ThemeProvider } from 'styled-components';
 import { theme } from 'style/theme';
+import FooterNavigation from 'layout/FooterNavigation';
 
 const Content = styled.div`
   position: relative;
@@ -35,6 +37,7 @@ const App: React.FC = () => {
         <Content>
           <LoggedInRoutes />
         </Content>
+        <FooterNavigation />
       </BrowserRouter>
     </ThemeProvider>
   );
@@ -42,7 +45,8 @@ const App: React.FC = () => {
 
 const LoggedInRoutes: React.FC = () => (
   <Switch>
-    <Route exact path="/:floor?" component={Reservation} />
+    <Route exact path="/" component={Reservation} />
+    <Route path="/mypage" component={MyPage} />
     <Route path="/reservation/:reservationId" component={ReservationResult} />
   </Switch>
 );
