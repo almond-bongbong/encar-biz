@@ -26,6 +26,8 @@ import {
 import { DATETIME_FORMAT } from 'types';
 import { RootState } from 'store';
 import { SingleDatePicker } from 'react-dates';
+import ModalPopup from 'components/ModalPopup/ModalPopup';
+import RoomDetail from 'components/RoomDetail';
 
 type SelectedFloor = string | number;
 
@@ -112,6 +114,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const slierIndex = floor === '18' ? 0 : 1;
   const slider = useRef<Slider>(null);
   const dispatch = useDispatch();
+  const [detailRoomId, setDetailRoomId] = useState<number | null>(null);
 
   const changeFloor = useCallback(
     (floor: SelectedFloor): void => {
@@ -190,12 +193,16 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     setShowCalendar(false);
   };
 
+  const handleClickRoom = (roomId: number): void => {
+    setDetailRoomId(roomId);
+  };
+
   return (
     <Content>
       <TabWrapper
         value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
         onClick={changeFloor}
-        items={[{ value: '18', label: '18층' }, { value: '19', label: '19층' }]}
+        items={[{ value: '18', label: '18F.' }, { value: '19', label: '19F.' }]}
       />
 
       <RecommendArea>
@@ -237,9 +244,33 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
       </RecommendArea>
 
       <Slider ref={slider} {...SLIDER_SETTINGS}>
-        <FloorMap rooms={MEETING_ROOMS.filter(r => r.floor === 18)} />
-        <FloorMap rooms={MEETING_ROOMS.filter(r => r.floor === 19)} />
+        <FloorMap
+          rooms={MEETING_ROOMS.filter(r => r.floor === 18)}
+          onClickRoom={handleClickRoom}
+        />
+        <FloorMap
+          rooms={MEETING_ROOMS.filter(r => r.floor === 19)}
+          onClickRoom={handleClickRoom}
+        />
       </Slider>
+
+      <ModalPopup
+        show={detailRoomId != null}
+        onClickDim={(): void => setDetailRoomId(null)}
+      >
+        {detailRoomId != null && (
+          <RoomDetail
+            selectedDate={moment(selectedDateTime).format('YYYY.MM.DD')}
+            roomId={detailRoomId}
+            submitLoading={false}
+            onClickReservation={(): void => {}}
+          />
+        )}
+      </ModalPopup>
+
+      {/*<ModalPopup show={showResult} onClickDim={handleCloseResultPopup}>
+        <ReservationResult />
+      </ModalPopup>*/}
     </Content>
   );
 };

@@ -1,13 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import ModalPopup from 'components/ModalPopup';
 import { Meeting } from 'types';
 import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
-import RoomDetail from '../RoomDetail';
-import ReservationResult from '../ReservationResult';
 
 interface ContainerProps {
   x: number;
@@ -23,6 +20,7 @@ interface RoomProps extends ContainerProps {
   name: string;
   meetings: Meeting[];
   selected: boolean;
+  onClickRoom: (roomId: number) => void;
 }
 
 const Container = styled.div<ContainerProps>`
@@ -89,10 +87,8 @@ const Room: React.FC<RoomProps> = ({
   height,
   meetings,
   selected,
+  onClickRoom,
 }) => {
-  const [showDetail, setShowDetail] = useState<boolean>(false);
-  const [showResult, setShowResult] = useState<boolean>(false);
-  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
   const selectedDateTime = useSelector(
     (state: RootState) => state.reservation.selectedDateTime,
   );
@@ -105,26 +101,8 @@ const Room: React.FC<RoomProps> = ({
     });
   }, [id, meetings, selectedDateTime]);
 
-  const handleShowDetailPopup = (): void => {
-    setShowDetail(true);
-  };
-
-  const handleCloseDetailPopup = (): void => {
-    setShowDetail(false);
-  };
-
-  const handleCloseResultPopup = (): void => {
-    setShowResult(false);
-  };
-
-  const handleReservation = (): void => {
-    setSubmitLoading(true);
-
-    setTimeout(() => {
-      setShowResult(true);
-      setSubmitLoading(false);
-      setShowDetail(false);
-    }, 100);
+  const handleClickRoom = (): void => {
+    onClickRoom(id);
   };
 
   return (
@@ -136,7 +114,7 @@ const Room: React.FC<RoomProps> = ({
         y={y}
         width={width}
         height={height}
-        onClick={handleShowDetailPopup}
+        onClick={handleClickRoom}
       >
         <Title>{name}</Title>
 
@@ -147,19 +125,6 @@ const Room: React.FC<RoomProps> = ({
         )}
         {selected && <Marker src={redArrowDown} alt="" />}
       </Container>
-
-      <ModalPopup show={showDetail} onClickDim={handleCloseDetailPopup}>
-        <RoomDetail
-          selectedDate={moment(selectedDateTime).format('YYYY.MM.DD')}
-          roomName={name}
-          submitLoading={submitLoading}
-          onClickReservation={handleReservation}
-        />
-      </ModalPopup>
-
-      <ModalPopup show={showResult} onClickDim={handleCloseResultPopup}>
-        <ReservationResult />
-      </ModalPopup>
     </>
   );
 };

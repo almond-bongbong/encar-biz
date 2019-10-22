@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
-import { clearfix } from '../../style/mixin';
-import Button from '../Button';
+import { clearfix } from 'style/mixin';
+import _ from 'lodash';
+import Button from 'components/Button';
+import { MEETING_ROOMS } from '../../constants/meetingRoom';
 
 interface RoomDetailProps {
-  roomName: string;
+  roomId: number;
   selectedDate: string;
   submitLoading: boolean;
   onClickReservation: () => void;
@@ -41,9 +43,12 @@ const Schedule = styled.div`
 
   & li {
     overflow: hidden;
+    padding: 5px 15px;
+    height: 34px;
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 100%;
+    background-color: #eee;
   }
 
   & li + li {
@@ -71,57 +76,66 @@ const ReservationArea = styled.div`
   }
 `;
 
+const numberFormatting = (number: number): string =>
+  number.toString().padStart(2, '0');
+
 const RoomDetail: React.FC<RoomDetailProps> = ({
-  roomName,
+  roomId,
   selectedDate,
   submitLoading,
   onClickReservation,
 }) => {
+  const roomData = MEETING_ROOMS.find(r => r.id === roomId);
+
   return (
     <Container>
-      <Title>{roomName}</Title>
-      <RoomInfo>
-        <Photo
-          src={
-            'https://campusu.co.kr/wp-content/uploads/2016/12/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_KENN4462-1.jpg'
-          }
-          alt={'회의실 전경'}
-        />
-        <Schedule>
-          <SelectedDate>{selectedDate}</SelectedDate>
-          <ul>
-            <li>
-              <span className={'time'}>10:00 ~ 11:00</span>
-              <span className={'name'}>위클리</span>
-            </li>
-            <li>
-              <span className={'time'}>11:00 ~ 11:30</span>
-              <span className={'name'}>프로젝트 회의</span>
-            </li>
-            <li>
-              <span className={'time'}>13:00 ~ 16:00</span>
-              <span className={'name'}>파트 회의</span>
-            </li>
-            <li>
-              <span className={'time'}>16:00 ~ 18:00</span>
-              <span className={'name'}>
-                긴 이름의 미팅입니다 긴 이름의 미팅입니다
-              </span>
-            </li>
-          </ul>
-        </Schedule>
-      </RoomInfo>
-      <ReservationArea>
-        <Button
-          width={130}
-          color={'gray'}
-          height={50}
-          loading={submitLoading}
-          onClick={onClickReservation}
-        >
-          예약하기
-        </Button>
-      </ReservationArea>
+      {roomData && (
+        <>
+          <Title>{roomData.name}</Title>
+          <RoomInfo>
+            <Photo
+              src={
+                'https://campusu.co.kr/wp-content/uploads/2016/12/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_KENN4462-1.jpg'
+              }
+              alt={'회의실 전경'}
+            />
+            <Schedule>
+              <SelectedDate>{selectedDate}</SelectedDate>
+              <ul>
+                {_.range(9, 19).map((hour, index, array) => (
+                  <Fragment key={hour}>
+                    <li>
+                      <span className={'time'}>{`${numberFormatting(
+                        hour,
+                      )}:00 ~ ${numberFormatting(hour)}:30`}</span>
+                      <span className={'name'}>회의명</span>
+                    </li>
+                    {index + 1 !== array.length && (
+                      <li>
+                        <span className={'time'}>{`${numberFormatting(
+                          hour,
+                        )}:30 ~ ${numberFormatting(hour + 1)}:00`}</span>
+                        <span className={'name'}>회의명</span>
+                      </li>
+                    )}
+                  </Fragment>
+                ))}
+              </ul>
+            </Schedule>
+          </RoomInfo>
+          <ReservationArea>
+            <Button
+              width={130}
+              color={'gray'}
+              height={50}
+              loading={submitLoading}
+              onClick={onClickReservation}
+            >
+              예약하기
+            </Button>
+          </ReservationArea>
+        </>
+      )}
     </Container>
   );
 };

@@ -126,7 +126,7 @@ const ModalPopup: React.FC<ModalPopupProps> = ({
 
       if (windowHeight - margin < height) setHasScroll(true);
     }
-  }, [show]);
+  }, [children]);
 
   const handleClickDim = useCallback(
     e => {

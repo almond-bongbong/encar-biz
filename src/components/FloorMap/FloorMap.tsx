@@ -25,9 +25,10 @@ interface FloorProps {
     width: number;
     height: number;
   }[];
+  onClickRoom: (roomId: number) => void;
 }
 
-const FloorMap: React.FC<FloorProps> = ({ rooms }) => {
+const FloorMap: React.FC<FloorProps> = ({ rooms, onClickRoom }) => {
   const selectedRoomId = useSelector(
     (state: RootState) => state.reservation.selectedRoomId,
   );
@@ -46,6 +47,7 @@ const FloorMap: React.FC<FloorProps> = ({ rooms }) => {
               width={room.width}
               height={room.height}
               selected={room.id === selectedRoomId}
+              onClickRoom={onClickRoom}
               meetings={RESERVATIONS.filter(r => r.roomId === room.id)}
             />
           );

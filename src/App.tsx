@@ -6,7 +6,6 @@ import MyPage from 'routes/MyPage';
 import ReservationResult from 'routes/ReservationResult';
 import styled, { ThemeProvider } from 'styled-components';
 import { theme } from 'style/theme';
-import FooterNavigation from 'layout/FooterNavigation';
 
 const Content = styled.div`
   position: relative;
@@ -37,7 +36,6 @@ const App: React.FC = () => {
         <Content>
           <LoggedInRoutes />
         </Content>
-        <FooterNavigation />
       </BrowserRouter>
     </ThemeProvider>
   );
