@@ -1,7 +1,7 @@
 import moment, { Moment } from 'moment';
 import { CalcType, DATETIME_FORMAT } from 'types';
 
-const calcRoundMinutes = (
+export const calcRoundMinutes = (
   time: Moment,
   step: number,
   calcType: CalcType,

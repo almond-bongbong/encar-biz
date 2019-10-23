@@ -1,13 +1,16 @@
-import React, { Fragment } from 'react';
-import styled from 'styled-components';
-import { clearfix } from 'style/mixin';
+import React, { ChangeEvent, Fragment, useState } from 'react';
+import styled, { css, SimpleInterpolation } from 'styled-components';
+import { blue, clearfix, hidden } from 'style/mixin';
 import _ from 'lodash';
 import Button from 'components/Button';
-import { MEETING_ROOMS } from '../../constants/meetingRoom';
+import { MEETING_ROOMS } from 'constants/meetingRoom';
+import moment, { Moment } from 'moment';
+import { calcRoundMinutes } from 'lib/datetime';
+import { CalcType } from 'types';
 
 interface RoomDetailProps {
   roomId: number;
-  selectedDate: string;
+  selectedDateTime: string;
   submitLoading: boolean;
   onClickReservation: () => void;
 }
@@ -40,18 +43,37 @@ const Schedule = styled.div`
   float: right;
   width: 350px;
   text-align: left;
+`;
 
-  & li {
-    overflow: hidden;
-    padding: 5px 15px;
-    height: 34px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 100%;
-    background-color: #eee;
+const TimeTable = styled.div``;
+
+interface TimeProps {
+  active: boolean;
+}
+
+const Time = styled.label<TimeProps>`
+  display: block;
+  overflow: hidden;
+  padding: 5px 15px;
+  height: 34px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  cursor: pointer;
+  ${({ active }): SimpleInterpolation =>
+    active
+      ? css`
+          background-color: ${blue};
+        `
+      : css`
+          background-color: #eee;
+        `};
+
+  & > input {
+    ${hidden}
   }
 
-  & li + li {
+  & + & {
     margin-top: 5px;
   }
 
@@ -81,11 +103,35 @@ const numberFormatting = (number: number): string =>
 
 const RoomDetail: React.FC<RoomDetailProps> = ({
   roomId,
-  selectedDate,
+  selectedDateTime,
   submitLoading,
   onClickReservation,
 }) => {
   const roomData = MEETING_ROOMS.find(r => r.id === roomId);
+  const defaultCheckedDateTime = calcRoundMinutes(
+    moment(selectedDateTime),
+    30,
+    CalcType.MINUS,
+  );
+  const [checkedDateTime, setCheckedDateTime] = useState<Moment[]>([
+    defaultCheckedDateTime,
+  ]);
+
+  const toggleSelectTime = (e: ChangeEvent<HTMLInputElement>): void => {
+    const { value, checked } = e.target;
+    const [hours, minutes] = value.split(':');
+    const checkedDateTime = moment(selectedDateTime);
+    checkedDateTime.set('hours', parseInt(hours));
+    checkedDateTime.set('minutes', parseInt(minutes));
+
+    if (checked) {
+      setCheckedDateTime(prev => prev.concat(checkedDateTime));
+    } else {
+      setCheckedDateTime(prev =>
+        prev.filter(datetime => !datetime.isSame(checkedDateTime)),
+      );
+    }
+  };
 
   return (
     <Container>
@@ -100,27 +146,50 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
               alt={'회의실 전경'}
             />
             <Schedule>
-              <SelectedDate>{selectedDate}</SelectedDate>
-              <ul>
-                {_.range(9, 19).map((hour, index, array) => (
-                  <Fragment key={hour}>
-                    <li>
-                      <span className={'time'}>{`${numberFormatting(
-                        hour,
-                      )}:00 ~ ${numberFormatting(hour)}:30`}</span>
-                      <span className={'name'}>회의명</span>
-                    </li>
-                    {index + 1 !== array.length && (
-                      <li>
+              <SelectedDate>
+                {moment(selectedDateTime).format('YYYY.MM.DD')}
+              </SelectedDate>
+              <TimeTable>
+                {_.range(9, 19).map((hour, index, array) => {
+                  const firstHalfChecked = checkedDateTime.some(
+                    datetime => datetime.format('H:mm') === `${hour}:00`,
+                  );
+                  const secondHalfChecked = checkedDateTime.some(
+                    datetime => datetime.format('H:mm') === `${hour}:30`,
+                  );
+
+                  return (
+                    <Fragment key={hour}>
+                      <Time active={firstHalfChecked}>
+                        <input
+                          type={'checkbox'}
+                          value={`${hour}:00`}
+                          checked={firstHalfChecked}
+                          onChange={toggleSelectTime}
+                        />
                         <span className={'time'}>{`${numberFormatting(
                           hour,
-                        )}:30 ~ ${numberFormatting(hour + 1)}:00`}</span>
+                        )}:00 ~ ${numberFormatting(hour)}:30`}</span>
                         <span className={'name'}>회의명</span>
-                      </li>
-                    )}
-                  </Fragment>
-                ))}
-              </ul>
+                      </Time>
+                      {index + 1 !== array.length && (
+                        <Time active={secondHalfChecked}>
+                          <input
+                            type={'checkbox'}
+                            value={`${hour}:30`}
+                            checked={secondHalfChecked}
+                            onChange={toggleSelectTime}
+                          />
+                          <span className={'time'}>{`${numberFormatting(
+                            hour,
+                          )}:30 ~ ${numberFormatting(hour + 1)}:00`}</span>
+                          <span className={'name'}>회의명</span>
+                        </Time>
+                      )}
+                    </Fragment>
+                  );
+                })}
+              </TimeTable>
             </Schedule>
           </RoomInfo>
           <ReservationArea>

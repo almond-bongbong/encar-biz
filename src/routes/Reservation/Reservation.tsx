@@ -260,7 +260,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
       >
         {detailRoomId != null && (
           <RoomDetail
-            selectedDate={moment(selectedDateTime).format('YYYY.MM.DD')}
+            selectedDateTime={selectedDateTime}
             roomId={detailRoomId}
             submitLoading={false}
             onClickReservation={(): void => {}}
