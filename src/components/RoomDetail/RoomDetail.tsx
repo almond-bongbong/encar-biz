@@ -7,6 +7,8 @@ import { MEETING_ROOMS } from 'constants/meetingRoom';
 import moment, { Moment } from 'moment';
 import { calcRoundMinutes } from 'lib/datetime';
 import { CalcType } from 'types';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 interface RoomDetailProps {
   roomId: number;
@@ -16,7 +18,7 @@ interface RoomDetailProps {
 }
 
 const Container = styled.div`
-  width: 900px;
+  width: 1000px;
   padding: 50px;
   background-color: #fff;
 `;
@@ -49,6 +51,7 @@ const TimeTable = styled.div``;
 
 interface TimeProps {
   active: boolean;
+  disabled: boolean;
 }
 
 const Time = styled.label<TimeProps>`
@@ -60,6 +63,12 @@ const Time = styled.label<TimeProps>`
   white-space: nowrap;
   max-width: 100%;
   cursor: pointer;
+  ${({ disabled }): SimpleInterpolation =>
+    disabled
+      ? css`
+          opacity: 0.3;
+        `
+      : ''};
   ${({ active }): SimpleInterpolation =>
     active
       ? css`
@@ -88,6 +97,7 @@ const SelectedDate = styled.div`
   font-weight: 700;
   font-size: 18px;
   text-decoration: underline;
+  text-align: left;
 `;
 
 const ReservationArea = styled.div`
@@ -107,6 +117,9 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
   submitLoading,
   onClickReservation,
 }) => {
+  const reservations = useSelector(
+    (state: RootState) => state.reservation.reservations,
+  );
   const roomData = MEETING_ROOMS.find(r => r.id === roomId);
   const defaultCheckedDateTime = calcRoundMinutes(
     moment(selectedDateTime),
@@ -138,6 +151,9 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
       {roomData && (
         <>
           <Title>{roomData.name}</Title>
+          <SelectedDate>
+            {moment(selectedDateTime).format('YYYY.MM.DD')}
+          </SelectedDate>
           <RoomInfo>
             <Photo
               src={
@@ -146,9 +162,6 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
               alt={'회의실 전경'}
             />
             <Schedule>
-              <SelectedDate>
-                {moment(selectedDateTime).format('YYYY.MM.DD')}
-              </SelectedDate>
               <TimeTable>
                 {_.range(9, 19).map((hour, index, array) => {
                   const firstHalfChecked = checkedDateTime.some(
@@ -157,14 +170,44 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                   const secondHalfChecked = checkedDateTime.some(
                     datetime => datetime.format('H:mm') === `${hour}:30`,
                   );
+                  const firstHalfDateTime = moment(selectedDateTime)
+                    .set('hours', hour)
+                    .set('minutes', 0);
+                  const secondHalfDateTime = moment(selectedDateTime)
+                    .set('hours', hour)
+                    .set('minutes', 30);
+                  const firstHalfReserved = reservations
+                    .filter(r => r.roomId === roomId)
+                    .some(
+                      r =>
+                        firstHalfDateTime.isSame(r.start) ||
+                        firstHalfDateTime.isBetween(
+                          moment(r.start),
+                          moment(r.end),
+                        ),
+                    );
+                  const secondHalfReserved = reservations
+                    .filter(r => r.roomId === roomId)
+                    .some(
+                      r =>
+                        secondHalfDateTime.isSame(r.start) ||
+                        secondHalfDateTime.isBetween(
+                          moment(r.start),
+                          moment(r.end),
+                        ),
+                    );
 
                   return (
                     <Fragment key={hour}>
-                      <Time active={firstHalfChecked}>
+                      <Time
+                        active={firstHalfChecked}
+                        disabled={firstHalfReserved}
+                      >
                         <input
                           type={'checkbox'}
                           value={`${hour}:00`}
                           checked={firstHalfChecked}
+                          disabled={firstHalfReserved}
                           onChange={toggleSelectTime}
                         />
                         <span className={'time'}>{`${numberFormatting(
@@ -173,11 +216,15 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                         <span className={'name'}>회의명</span>
                       </Time>
                       {index + 1 !== array.length && (
-                        <Time active={secondHalfChecked}>
+                        <Time
+                          active={secondHalfChecked}
+                          disabled={secondHalfReserved}
+                        >
                           <input
                             type={'checkbox'}
                             value={`${hour}:30`}
                             checked={secondHalfChecked}
+                            disabled={firstHalfReserved}
                             onChange={toggleSelectTime}
                           />
                           <span className={'time'}>{`${numberFormatting(

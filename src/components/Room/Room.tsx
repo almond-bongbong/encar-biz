@@ -5,6 +5,7 @@ import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
+import { isBetween } from '../../lib/datetime';
 
 interface ContainerProps {
   x: number;
@@ -92,14 +93,14 @@ const Room: React.FC<RoomProps> = ({
   const selectedDateTime = useSelector(
     (state: RootState) => state.reservation.selectedDateTime,
   );
-  const currentMeeting = useMemo(() => {
-    return meetings.find(r => {
-      const start = moment(r.start);
-      const end = moment(r.end);
-
-      return r.roomId === id && moment(selectedDateTime).isBetween(start, end);
-    });
-  }, [id, meetings, selectedDateTime]);
+  const currentMeeting = useMemo(
+    () =>
+      meetings.find(
+        r => r.roomId === id && isBetween(selectedDateTime, r.start, r.end),
+        [id, meetings, selectedDateTime],
+      ),
+    [id, selectedDateTime, meetings],
+  );
 
   const handleClickRoom = (): void => {
     onClickRoom(id);

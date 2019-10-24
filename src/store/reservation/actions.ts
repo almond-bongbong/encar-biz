@@ -1,29 +1,23 @@
-import {
-  SelectDateTimeAction,
-  Add30MinutesAction,
-  Minus30MinutesAction,
-  SelectRoomAction,
-} from './types';
+import { createStandardAction, createAsyncAction } from 'typesafe-actions';
+import { Meeting } from 'types';
 
-export const SELECT_DATETIME = 'reservation/SELECT_DATETIME' as const;
-export const ADD_30_MINUTES = 'reservation/ADD_30_MINUTES' as const;
-export const MINUS_30_MINUTES = 'reservation/MINUS_30_MINUTES' as const;
-export const SELECT_ROOM = 'reservation/SELECT_ROOM' as const;
+export const FETCH_RESERVATIONS_REQUEST =
+  'reservation/FETCH_RESERVATIONS_REQUEST';
+export const FETCH_RESERVATIONS_SUCCESS =
+  'reservation/FETCH_RESERVATIONS_SUCCESS';
+export const FETCH_RESERVATIONS_FAILURE =
+  'reservation/FETCH_RESERVATIONS_FAILURE';
+export const SELECT_DATETIME = 'reservation/SELECT_DATETIME';
+export const ADD_30_MINUTES = 'reservation/ADD_30_MINUTES';
+export const MINUS_30_MINUTES = 'reservation/MINUS_30_MINUTES';
+export const SELECT_ROOM = 'reservation/SELECT_ROOM';
 
-export const selectDateTime = (datetime: string): SelectDateTimeAction => ({
-  type: SELECT_DATETIME,
-  payload: datetime,
-});
-
-export const add30Minutes = (): Add30MinutesAction => ({
-  type: ADD_30_MINUTES,
-});
-
-export const minus30Minutes = (): Minus30MinutesAction => ({
-  type: MINUS_30_MINUTES,
-});
-
-export const selectRoom = (roomId: number): SelectRoomAction => ({
-  type: SELECT_ROOM,
-  payload: roomId,
-});
+export const fetchReservations = createAsyncAction(
+  FETCH_RESERVATIONS_REQUEST,
+  FETCH_RESERVATIONS_SUCCESS,
+  FETCH_RESERVATIONS_FAILURE,
+)<void, Meeting[], Error>();
+export const selectDateTime = createStandardAction(SELECT_DATETIME)<string>();
+export const add30Minutes = createStandardAction(ADD_30_MINUTES)();
+export const minus30Minutes = createStandardAction(MINUS_30_MINUTES)();
+export const selectRoom = createStandardAction(SELECT_ROOM)<number>();

@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import Room from 'components/Room';
-import { RESERVATIONS } from 'constants/dummyData';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 
@@ -29,6 +28,9 @@ interface FloorProps {
 }
 
 const FloorMap: React.FC<FloorProps> = ({ rooms, onClickRoom }) => {
+  const reservations = useSelector(
+    (state: RootState) => state.reservation.reservations,
+  );
   const selectedRoomId = useSelector(
     (state: RootState) => state.reservation.selectedRoomId,
   );
@@ -48,7 +50,7 @@ const FloorMap: React.FC<FloorProps> = ({ rooms, onClickRoom }) => {
               height={room.height}
               selected={room.id === selectedRoomId}
               onClickRoom={onClickRoom}
-              meetings={RESERVATIONS.filter(r => r.roomId === room.id)}
+              meetings={reservations.filter(r => r.roomId === room.id)}
             />
           );
         })}

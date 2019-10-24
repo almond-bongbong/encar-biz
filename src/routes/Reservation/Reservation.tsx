@@ -19,6 +19,7 @@ import TimeSelect from 'components/TimeSelect';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   add30Minutes,
+  fetchReservations,
   minus30Minutes,
   selectDateTime,
   selectRoom,
@@ -153,6 +154,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   );
 
   useEffect(() => {
+    dispatch(fetchReservations.request());
     dispatch(selectRoom(1));
   }, [dispatch]);
 
