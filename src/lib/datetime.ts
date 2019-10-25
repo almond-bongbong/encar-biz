@@ -25,9 +25,3 @@ export const add30Minutes = (time: string): string =>
 
 export const minus30Minutes = (time: string): string =>
   calcRoundMinutes(moment(time), 30, CalcType.MINUS).format(DATETIME_FORMAT);
-
-export const isBetween = (
-  datetime: string,
-  start: string,
-  end: string,
-): boolean => moment(datetime).isBetween(moment(start), moment(end));

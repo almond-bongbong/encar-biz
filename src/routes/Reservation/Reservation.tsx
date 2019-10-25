@@ -266,6 +266,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
             roomId={detailRoomId}
             submitLoading={false}
             onClickReservation={(): void => {}}
+            onClose={(): void => setDetailRoomId(null)}
           />
         )}
       </ModalPopup>

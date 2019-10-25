@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Fragment, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import styled, { css, SimpleInterpolation } from 'styled-components';
 import { blue, clearfix, hidden } from 'style/mixin';
 import _ from 'lodash';
@@ -15,6 +15,7 @@ interface RoomDetailProps {
   selectedDateTime: string;
   submitLoading: boolean;
   onClickReservation: () => void;
+  onClose: () => void;
 }
 
 const Container = styled.div`
@@ -104,18 +105,16 @@ const ReservationArea = styled.div`
   margin-top: 50px;
 
   & > div + div {
-    margin-left: 5px;
+    margin-left: 10px;
   }
 `;
-
-const numberFormatting = (number: number): string =>
-  number.toString().padStart(2, '0');
 
 const RoomDetail: React.FC<RoomDetailProps> = ({
   roomId,
   selectedDateTime,
   submitLoading,
   onClickReservation,
+  onClose,
 }) => {
   const reservations = useSelector(
     (state: RootState) => state.reservation.reservations,
@@ -163,77 +162,41 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
             />
             <Schedule>
               <TimeTable>
-                {_.range(9, 19).map((hour, index, array) => {
-                  const firstHalfChecked = checkedDateTime.some(
-                    datetime => datetime.format('H:mm') === `${hour}:00`,
+                {_.range(9, 18.5, 0.5).map(hour => {
+                  const start = moment(selectedDateTime)
+                    .set('hours', Math.floor(hour))
+                    .set('minutes', (hour % 1) * 60);
+                  const end = start.clone().add(30, 'minutes');
+                  const startTime = start.format('HH:mm');
+                  const endTime = end.format('HH:mm');
+                  const checked = checkedDateTime.some(
+                    d => d.format('HH:mm') === startTime,
                   );
-                  const secondHalfChecked = checkedDateTime.some(
-                    datetime => datetime.format('H:mm') === `${hour}:30`,
-                  );
-                  const firstHalfDateTime = moment(selectedDateTime)
-                    .set('hours', hour)
-                    .set('minutes', 0);
-                  const secondHalfDateTime = moment(selectedDateTime)
-                    .set('hours', hour)
-                    .set('minutes', 30);
-                  const firstHalfReserved = reservations
+                  const reservedMeeting = reservations
                     .filter(r => r.roomId === roomId)
-                    .some(
+                    .find(
                       r =>
-                        firstHalfDateTime.isSame(r.start) ||
-                        firstHalfDateTime.isBetween(
-                          moment(r.start),
-                          moment(r.end),
-                        ),
+                        start.isSame(r.start) ||
+                        start.isBetween(r.start, r.end),
                     );
-                  const secondHalfReserved = reservations
-                    .filter(r => r.roomId === roomId)
-                    .some(
-                      r =>
-                        secondHalfDateTime.isSame(r.start) ||
-                        secondHalfDateTime.isBetween(
-                          moment(r.start),
-                          moment(r.end),
-                        ),
-                    );
+                  const isReserved = !!reservedMeeting;
 
                   return (
-                    <Fragment key={hour}>
-                      <Time
-                        active={firstHalfChecked}
-                        disabled={firstHalfReserved}
-                      >
-                        <input
-                          type={'checkbox'}
-                          value={`${hour}:00`}
-                          checked={firstHalfChecked}
-                          disabled={firstHalfReserved}
-                          onChange={toggleSelectTime}
-                        />
-                        <span className={'time'}>{`${numberFormatting(
-                          hour,
-                        )}:00 ~ ${numberFormatting(hour)}:30`}</span>
-                        <span className={'name'}>회의명</span>
-                      </Time>
-                      {index + 1 !== array.length && (
-                        <Time
-                          active={secondHalfChecked}
-                          disabled={secondHalfReserved}
-                        >
-                          <input
-                            type={'checkbox'}
-                            value={`${hour}:30`}
-                            checked={secondHalfChecked}
-                            disabled={firstHalfReserved}
-                            onChange={toggleSelectTime}
-                          />
-                          <span className={'time'}>{`${numberFormatting(
-                            hour,
-                          )}:30 ~ ${numberFormatting(hour + 1)}:00`}</span>
-                          <span className={'name'}>회의명</span>
-                        </Time>
-                      )}
-                    </Fragment>
+                    <Time key={hour} active={checked} disabled={isReserved}>
+                      <input
+                        type={'checkbox'}
+                        value={startTime}
+                        checked={checked}
+                        disabled={isReserved}
+                        onChange={toggleSelectTime}
+                      />
+                      <span
+                        className={'time'}
+                      >{`${startTime} ~ ${endTime}`}</span>
+                      <span className={'name'}>
+                        {reservedMeeting && reservedMeeting.title}
+                      </span>
+                    </Time>
                   );
                 })}
               </TimeTable>
@@ -248,6 +211,9 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
               onClick={onClickReservation}
             >
               예약하기
+            </Button>
+            <Button width={130} height={50} onClick={onClose}>
+              닫기
             </Button>
           </ReservationArea>
         </>

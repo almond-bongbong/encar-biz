@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { Meeting } from 'types';
-import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
-import { isBetween } from '../../lib/datetime';
+import moment from 'moment';
 
 interface ContainerProps {
   x: number;
@@ -96,7 +95,8 @@ const Room: React.FC<RoomProps> = ({
   const currentMeeting = useMemo(
     () =>
       meetings.find(
-        r => r.roomId === id && isBetween(selectedDateTime, r.start, r.end),
+        r =>
+          r.roomId === id && moment(selectedDateTime).isBetween(r.start, r.end),
         [id, meetings, selectedDateTime],
       ),
     [id, selectedDateTime, meetings],

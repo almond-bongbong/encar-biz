@@ -8,8 +8,8 @@ export const RESERVATIONS = [
   {
     roomId: 0,
     title: '발리 두번째 팀미팅',
-    start: '2019-10-24 13:30',
-    end: '2019-10-24 14:00',
+    start: '2019-10-25 11:30',
+    end: '2019-10-25 12:30',
   },
   {
     roomId: 0,
