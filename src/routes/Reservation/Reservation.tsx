@@ -11,7 +11,7 @@ import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
 import moment, { Moment } from 'moment';
 import 'moment/locale/ko';
-import { MEETING_ROOMS } from 'constants/meetingRoom';
+import { CANTEEN, MEETING_ROOMS } from 'constants/meetingRoom';
 import FloorMap from 'components/FloorMap';
 import Slider, { Settings } from 'react-slick';
 import SliderArrow from 'components/SliderArrow';
@@ -19,6 +19,7 @@ import TimeSelect from 'components/TimeSelect';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   add30Minutes,
+  FETCH_RESERVATIONS_REQUEST,
   fetchReservations,
   minus30Minutes,
   selectDateTime,
@@ -29,14 +30,22 @@ import { RootState } from 'store';
 import { SingleDatePicker } from 'react-dates';
 import ModalPopup from 'components/ModalPopup/ModalPopup';
 import RoomDetail from 'components/RoomDetail';
+import Loader from 'components/Loader';
 
 type SelectedFloor = string | number;
 
 const Content = styled.div``;
 
+const LoaderWrapper = styled.div`
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+`;
+
 const TimeSelectContainer = styled.div`
   position: absolute;
-  top: 50px;
+  top: 90px;
   left: 0;
   z-index: 100;
   background-color: #fff;
@@ -45,7 +54,6 @@ const TimeSelectContainer = styled.div`
 
 const DatePickerWrapper = styled.div`
   display: block;
-  margin-bottom: 15px;
   vertical-align: middle;
 
   & .DateInput {
@@ -53,7 +61,7 @@ const DatePickerWrapper = styled.div`
   }
 
   & .DateInput_input {
-    padding: 0;
+    padding-left: 0;
     color: #444;
     font-weight: 400;
     font-size: 22px;
@@ -100,13 +108,12 @@ const TabWrapper = styled(FloorTab)`
 const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const [showTimeSelect, setShowTimeSelect] = useState<boolean>(false);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
-  const selectedRoomId = useSelector(
-    (state: RootState) => state.reservation.selectedRoomId,
+  const { isUseRooms, selectedRoomId, selectedDateTime } = useSelector(
+    (state: RootState) => state.reservation,
   );
-  const selectedRoom = MEETING_ROOMS.find(r => r.id === selectedRoomId);
-  const selectedDateTime = useSelector(
-    (state: RootState) => state.reservation.selectedDateTime,
-  );
+  const loading = useSelector((state: RootState) => state.loading);
+  const selectedRoom =
+    MEETING_ROOMS.find(r => r.id === selectedRoomId) || CANTEEN;
   const selectedDateTimeMoment = useMemo(() => moment(selectedDateTime), [
     selectedDateTime,
   ]);
@@ -116,6 +123,8 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const slider = useRef<Slider>(null);
   const dispatch = useDispatch();
   const [detailRoomId, setDetailRoomId] = useState<number | null>(null);
+  const selectedDateTimeInterval = useRef<number | null>(null);
+  const eventLivingTimer = useRef<number | null>(null);
 
   const changeFloor = useCallback(
     (floor: SelectedFloor): void => {
@@ -153,10 +162,49 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     [dispatch],
   );
 
+  const liveEventListener = (): void => {
+    console.log('fire');
+  };
+
+  const startInterval = useCallback((): void => {
+    selectedDateTimeInterval.current = setInterval(() => {
+      dispatch(selectDateTime(moment().format(DATETIME_FORMAT)));
+    }, 3000);
+  }, [dispatch]);
+
+  useEffect(() => {
+    window.addEventListener('mousedown', liveEventListener);
+    window.addEventListener('touchstart', liveEventListener);
+
+    return (): void => {
+      window.removeEventListener('mousedown', liveEventListener);
+      window.removeEventListener('touchstart', liveEventListener);
+    };
+  }, []);
+
+  useEffect(() => {
+    startInterval();
+  }, [startInterval]);
+
   useEffect(() => {
     dispatch(fetchReservations.request());
-    dispatch(selectRoom(1));
   }, [dispatch]);
+
+  useEffect(() => {
+    if (isUseRooms.length > 0) {
+      const unUsedRooms = MEETING_ROOMS.filter(
+        room => !isUseRooms.some(isUseRoom => isUseRoom.id === room.id),
+      );
+      const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
+      const randomRoom = unUsedRooms[randomIndex];
+
+      if (randomRoom) {
+        dispatch(selectRoom(unUsedRooms[randomIndex].id));
+      } else {
+        dispatch(selectRoom(-1));
+      }
+    }
+  }, [dispatch, isUseRooms]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -201,79 +249,92 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
 
   return (
     <Content>
-      <TabWrapper
-        value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
-        onClick={changeFloor}
-        items={[{ value: '18', label: '18F.' }, { value: '19', label: '19F.' }]}
-      />
-
-      <RecommendArea>
-        <DatePickerWrapper>
-          <SingleDatePicker
-            id={'datepicker'}
-            date={selectedDateTimeMoment}
-            onDateChange={handleDate}
-            focused={showCalendar}
-            onFocusChange={({ focused }): void => setShowCalendar(!!focused)}
-            hideKeyboardShortcutsPanel={true}
-            monthFormat={'YYYY MMMM'}
-            displayFormat={'YYYY.MM.DD'}
-            numberOfMonths={1}
-            noBorder={true}
-            readOnly
+      {loading[FETCH_RESERVATIONS_REQUEST] ? (
+        <LoaderWrapper>
+          <Loader color={'blue'} size={80} />
+        </LoaderWrapper>
+      ) : (
+        <>
+          <TabWrapper
+            value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
+            onClick={changeFloor}
+            items={[
+              { value: '18', label: '18F.' },
+              { value: '19', label: '19F.' },
+            ]}
           />
-        </DatePickerWrapper>
 
-        <TimeButton
-          type={'button'}
-          onFocus={(): void => setShowTimeSelect(true)}
-          onBlur={(): void => setShowTimeSelect(false)}
-        >
-          {selectedDateTimeMoment.format(`A h시 m분`)}
-        </TimeButton>
+          <RecommendArea>
+            <DatePickerWrapper>
+              <SingleDatePicker
+                id={'datepicker'}
+                date={selectedDateTimeMoment}
+                onDateChange={handleDate}
+                focused={showCalendar}
+                onFocusChange={({ focused }): void =>
+                  setShowCalendar(!!focused)
+                }
+                hideKeyboardShortcutsPanel={true}
+                monthFormat={'YYYY MMMM'}
+                displayFormat={'YYYY.MM.DD'}
+                numberOfMonths={1}
+                noBorder={true}
+                readOnly
+              />
+            </DatePickerWrapper>
 
-        {selectedRoom && (
-          <Recommend>
-            지금 <em>{selectedRoom.name}</em> 어때?
-          </Recommend>
-        )}
+            <TimeButton
+              type={'button'}
+              onFocus={(): void => setShowTimeSelect(true)}
+              onBlur={(): void => setShowTimeSelect(false)}
+            >
+              {selectedDateTimeMoment.format(`A h시 m분`)}
+            </TimeButton>
 
-        {showTimeSelect && (
-          <TimeSelectContainer>
-            <TimeSelect onSelectTime={handleTime} />
-          </TimeSelectContainer>
-        )}
-      </RecommendArea>
+            {selectedRoom && (
+              <Recommend>
+                지금 <em>{selectedRoom.name}</em> 어때?
+              </Recommend>
+            )}
 
-      <Slider ref={slider} {...SLIDER_SETTINGS}>
-        <FloorMap
-          rooms={MEETING_ROOMS.filter(r => r.floor === 18)}
-          onClickRoom={handleClickRoom}
-        />
-        <FloorMap
-          rooms={MEETING_ROOMS.filter(r => r.floor === 19)}
-          onClickRoom={handleClickRoom}
-        />
-      </Slider>
+            {showTimeSelect && (
+              <TimeSelectContainer>
+                <TimeSelect onSelectTime={handleTime} />
+              </TimeSelectContainer>
+            )}
+          </RecommendArea>
 
-      <ModalPopup
-        show={detailRoomId != null}
-        onClickDim={(): void => setDetailRoomId(null)}
-      >
-        {detailRoomId != null && (
-          <RoomDetail
-            selectedDateTime={selectedDateTime}
-            roomId={detailRoomId}
-            submitLoading={false}
-            onClickReservation={(): void => {}}
-            onClose={(): void => setDetailRoomId(null)}
-          />
-        )}
-      </ModalPopup>
+          <Slider ref={slider} {...SLIDER_SETTINGS}>
+            <FloorMap
+              rooms={MEETING_ROOMS.filter(r => r.floor === 18)}
+              onClickRoom={handleClickRoom}
+            />
+            <FloorMap
+              rooms={MEETING_ROOMS.filter(r => r.floor === 19)}
+              onClickRoom={handleClickRoom}
+            />
+          </Slider>
 
-      {/*<ModalPopup show={showResult} onClickDim={handleCloseResultPopup}>
-        <ReservationResult />
-      </ModalPopup>*/}
+          <ModalPopup
+            show={detailRoomId != null}
+            onClickDim={(): void => setDetailRoomId(null)}
+          >
+            {detailRoomId != null && (
+              <RoomDetail
+                selectedDateTime={selectedDateTime}
+                roomId={detailRoomId}
+                submitLoading={false}
+                onClickReservation={(): void => {}}
+                onClose={(): void => setDetailRoomId(null)}
+              />
+            )}
+          </ModalPopup>
+
+          {/*<ModalPopup show={showResult} onClickDim={handleCloseResultPopup}>
+            <ReservationResult />
+          </ModalPopup>*/}
+        </>
+      )}
     </Content>
   );
 };

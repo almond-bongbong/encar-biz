@@ -1,3 +1,7 @@
+export const CANTEEN = {
+  name: '캔틴',
+};
+
 export const MEETING_ROOMS = [
   {
     id: 4,

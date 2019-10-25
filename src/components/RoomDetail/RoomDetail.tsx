@@ -205,7 +205,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
           <ReservationArea>
             <Button
               width={130}
-              color={'gray'}
+              color={'blue'}
               height={50}
               loading={submitLoading}
               onClick={onClickReservation}

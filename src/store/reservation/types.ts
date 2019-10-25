@@ -4,9 +4,10 @@ import {
   selectDateTime,
   selectRoom,
   fetchReservations,
+  setIsUseRooms,
 } from './actions';
 import { ActionType } from 'typesafe-actions';
-import { Meeting } from 'types';
+import { Meeting, Room } from 'types';
 
 const actions = {
   fetchReservations,
@@ -14,12 +15,14 @@ const actions = {
   add30Minutes,
   minus30Minutes,
   selectRoom,
+  setIsUseRooms,
 };
 
 export type ReservationAction = ActionType<typeof actions>;
 
 export interface ReservationState {
   selectedDateTime: string;
-  selectedRoomId: number;
+  selectedRoomId: number | null;
   reservations: Meeting[];
+  isUseRooms: Room[];
 }

@@ -11,3 +11,13 @@ export interface Meeting {
   start: string;
   end: string;
 }
+
+export interface Room {
+  id: number;
+  floor: number;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
