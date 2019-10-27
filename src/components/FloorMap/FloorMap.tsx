@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import Room from 'components/Room';
+import RoomBox from 'components/Room';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
+import { Room } from '../../types';
 
 const Container = styled.div`
   padding: 20px;
@@ -24,15 +25,19 @@ interface FloorProps {
     width: number;
     height: number;
   }[];
+  isSwiping?: boolean;
+  recommendRoom?: Room;
   onClickRoom: (roomId: number) => void;
 }
 
-const FloorMap: React.FC<FloorProps> = ({ rooms, onClickRoom }) => {
+const FloorMap: React.FC<FloorProps> = ({
+  rooms,
+  onClickRoom,
+  isSwiping,
+  recommendRoom,
+}) => {
   const reservations = useSelector(
     (state: RootState) => state.reservation.reservations,
-  );
-  const selectedRoomId = useSelector(
-    (state: RootState) => state.reservation.selectedRoomId,
   );
 
   return (
@@ -40,7 +45,7 @@ const FloorMap: React.FC<FloorProps> = ({ rooms, onClickRoom }) => {
       <MapArea>
         {rooms.map(room => {
           return (
-            <Room
+            <RoomBox
               key={room.id}
               id={room.id}
               name={room.name}
@@ -48,9 +53,10 @@ const FloorMap: React.FC<FloorProps> = ({ rooms, onClickRoom }) => {
               y={room.y}
               width={room.width}
               height={room.height}
-              selected={room.id === selectedRoomId}
+              selected={recommendRoom ? room.id === recommendRoom.id : false}
               onClickRoom={onClickRoom}
               meetings={reservations.filter(r => r.roomId === room.id)}
+              isSwiping={isSwiping}
             />
           );
         })}

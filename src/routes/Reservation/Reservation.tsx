@@ -23,9 +23,8 @@ import {
   fetchReservations,
   minus30Minutes,
   selectDateTime,
-  selectRoom,
 } from 'store/reservation';
-import { DATETIME_FORMAT } from 'types';
+import { DATETIME_FORMAT, Meeting, Room } from 'types';
 import { RootState } from 'store';
 import { SingleDatePicker } from 'react-dates';
 import ModalPopup from 'components/ModalPopup/ModalPopup';
@@ -92,6 +91,12 @@ const TimeButton = styled.button`
   font-size: 34px;
 `;
 
+const Second = styled.span`
+  margin-left: 10px;
+  color: #666;
+  font-size: 24px;
+`;
+
 const TabWrapper = styled(FloorTab)`
   position: absolute;
   top: 50px;
@@ -108,12 +113,10 @@ const TabWrapper = styled(FloorTab)`
 const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const [showTimeSelect, setShowTimeSelect] = useState<boolean>(false);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
-  const { isUseRooms, selectedRoomId, selectedDateTime } = useSelector(
+  const { reservations, selectedDateTime } = useSelector(
     (state: RootState) => state.reservation,
   );
   const loading = useSelector((state: RootState) => state.loading);
-  const selectedRoom =
-    MEETING_ROOMS.find(r => r.id === selectedRoomId) || CANTEEN;
   const selectedDateTimeMoment = useMemo(() => moment(selectedDateTime), [
     selectedDateTime,
   ]);
@@ -121,10 +124,29 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const { floor } = qs.parse(search);
   const slierIndex = floor === '18' ? 0 : 1;
   const slider = useRef<Slider>(null);
+  const [isSwiping, setIsSwiping] = useState<boolean>(false);
   const dispatch = useDispatch();
   const [detailRoomId, setDetailRoomId] = useState<number | null>(null);
-  const selectedDateTimeInterval = useRef<number | null>(null);
-  const eventLivingTimer = useRef<number | null>(null);
+  const [selectedDateTimeInterval, setSelectedDateTimeInterval] = useState<
+    number | null
+  >(null);
+  const [eventLivingTimer, setEventLivingTimer] = useState<number | null>(null);
+  const recommendRoom = useMemo(() => {
+    if (reservations.length > 0) {
+      const inUsedRooms = MEETING_ROOMS.filter((room: Room) =>
+        reservations.some(
+          (r: Meeting) =>
+            room.id === r.roomId &&
+            selectedDateTimeMoment.isBetween(r.start, r.end),
+        ),
+      );
+      const unUsedRooms = MEETING_ROOMS.filter(
+        (room: Room) => !inUsedRooms.some((r: Room) => room.id === r.id),
+      );
+      const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
+      return unUsedRooms[randomIndex] || CANTEEN;
+    }
+  }, [reservations, selectedDateTimeMoment]);
 
   const changeFloor = useCallback(
     (floor: SelectedFloor): void => {
@@ -140,7 +162,11 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
       initialSlide: slierIndex,
       prevArrow: <SliderArrow direction={'left'} />,
       nextArrow: <SliderArrow direction={'right'} />,
+      beforeChange: (): void => {
+        setIsSwiping(true);
+      },
       afterChange: (currentSlide: number): void => {
+        setIsSwiping(false);
         const newFloor = currentSlide === 0 ? '18' : '19';
         changeFloor(newFloor);
       },
@@ -162,15 +188,29 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     [dispatch],
   );
 
-  const liveEventListener = (): void => {
-    console.log('fire');
-  };
-
   const startInterval = useCallback((): void => {
-    selectedDateTimeInterval.current = setInterval(() => {
-      dispatch(selectDateTime(moment().format(DATETIME_FORMAT)));
-    }, 3000);
+    setSelectedDateTimeInterval(
+      setInterval(() => {
+        dispatch(selectDateTime(moment().format(DATETIME_FORMAT)));
+      }, 1000),
+    );
   }, [dispatch]);
+
+  const liveEventListener = useCallback((): void => {
+    if (selectedDateTimeInterval) {
+      clearInterval(selectedDateTimeInterval);
+      setSelectedDateTimeInterval(null);
+    }
+    if (eventLivingTimer) {
+      clearTimeout(eventLivingTimer);
+      setEventLivingTimer(null);
+    }
+    setEventLivingTimer(
+      setTimeout(() => {
+        startInterval();
+      }, 60 * 1000),
+    );
+  }, [startInterval, eventLivingTimer, selectedDateTimeInterval]);
 
   useEffect(() => {
     window.addEventListener('mousedown', liveEventListener);
@@ -180,7 +220,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
       window.removeEventListener('mousedown', liveEventListener);
       window.removeEventListener('touchstart', liveEventListener);
     };
-  }, []);
+  }, [liveEventListener]);
 
   useEffect(() => {
     startInterval();
@@ -190,21 +230,23 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     dispatch(fetchReservations.request());
   }, [dispatch]);
 
-  useEffect(() => {
-    if (isUseRooms.length > 0) {
-      const unUsedRooms = MEETING_ROOMS.filter(
-        room => !isUseRooms.some(isUseRoom => isUseRoom.id === room.id),
-      );
-      const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
-      const randomRoom = unUsedRooms[randomIndex];
-
-      if (randomRoom) {
-        dispatch(selectRoom(unUsedRooms[randomIndex].id));
-      } else {
-        dispatch(selectRoom(-1));
-      }
-    }
-  }, [dispatch, isUseRooms]);
+  // useEffect(() => {
+  //   if (reservations) {
+  //     const unUsedRooms = MEETING_ROOMS.filter(
+  //       room => !isUseRooms.some(isUseRoom => isUseRoom.id === room.id),
+  //     );
+  //     const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
+  //     const randomRoom = unUsedRooms[randomIndex];
+  //
+  //     console.log(randomRoom);
+  //
+  //     if (randomRoom) {
+  //       dispatch(selectRoom(unUsedRooms[randomIndex].id));
+  //     } else {
+  //       dispatch(selectRoom(null));
+  //     }
+  //   }
+  // }, [dispatch]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -289,11 +331,14 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
               onBlur={(): void => setShowTimeSelect(false)}
             >
               {selectedDateTimeMoment.format(`A h시 m분`)}
+              {selectedDateTimeInterval && (
+                <Second>{`${moment().format('ss')}초`}</Second>
+              )}
             </TimeButton>
 
-            {selectedRoom && (
+            {recommendRoom && (
               <Recommend>
-                지금 <em>{selectedRoom.name}</em> 어때?
+                지금 <em>{recommendRoom.name}</em> 어때?
               </Recommend>
             )}
 
@@ -307,11 +352,15 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
           <Slider ref={slider} {...SLIDER_SETTINGS}>
             <FloorMap
               rooms={MEETING_ROOMS.filter(r => r.floor === 18)}
+              recommendRoom={recommendRoom}
               onClickRoom={handleClickRoom}
+              isSwiping={isSwiping}
             />
             <FloorMap
               rooms={MEETING_ROOMS.filter(r => r.floor === 19)}
+              recommendRoom={recommendRoom}
               onClickRoom={handleClickRoom}
+              isSwiping={isSwiping}
             />
           </Slider>
 

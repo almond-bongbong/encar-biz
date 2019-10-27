@@ -1,14 +1,14 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import styled, { css, SimpleInterpolation } from 'styled-components';
 import { blue, clearfix, hidden } from 'style/mixin';
 import _ from 'lodash';
 import Button from 'components/Button';
 import { MEETING_ROOMS } from 'constants/meetingRoom';
-import moment, { Moment } from 'moment';
-import { calcRoundMinutes } from 'lib/datetime';
-import { CalcType } from 'types';
+import moment from 'moment';
+import { roundMinutes } from 'lib/datetime';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
+import { RootState } from 'store';
+import { Meeting } from 'types';
 
 interface RoomDetailProps {
   roomId: number;
@@ -16,6 +16,15 @@ interface RoomDetailProps {
   submitLoading: boolean;
   onClickReservation: () => void;
   onClose: () => void;
+}
+
+interface Time {
+  id: number;
+  startTime: string;
+  endTime: string;
+  reservedMeeting?: Meeting;
+  isReserved: boolean;
+  active: boolean;
 }
 
 const Container = styled.div`
@@ -120,29 +129,58 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
     (state: RootState) => state.reservation.reservations,
   );
   const roomData = MEETING_ROOMS.find(r => r.id === roomId);
-  const defaultCheckedDateTime = calcRoundMinutes(
-    moment(selectedDateTime),
-    30,
-    CalcType.MINUS,
-  );
-  const [checkedDateTime, setCheckedDateTime] = useState<Moment[]>([
-    defaultCheckedDateTime,
-  ]);
+  const [times, setTimes] = useState<Time[]>([]);
+
+  useEffect(() => {
+    const initTimes: Time[] = _.range(9, 18.5, 0.5).map((hour, index) => {
+      const start = moment(selectedDateTime)
+        .set('hours', Math.floor(hour))
+        .set('minutes', (hour % 1) * 60);
+      const end = start.clone().add(30, 'minutes');
+      const startTime = start.format('HH:mm');
+      const endTime = end.format('HH:mm');
+      const reservedMeeting = reservations
+        .filter(r => r.roomId === roomId)
+        .find(r => start.isSame(r.start) || start.isBetween(r.start, r.end));
+      const isReserved = !!reservedMeeting;
+      const active =
+        !isReserved &&
+        roundMinutes(moment(selectedDateTime), 30).format('HH:mm') ===
+          startTime;
+
+      return {
+        id: index,
+        startTime,
+        endTime,
+        reservedMeeting,
+        isReserved,
+        active,
+      };
+    });
+
+    setTimes(initTimes);
+  }, [roomId, selectedDateTime, reservations]);
 
   const toggleSelectTime = (e: ChangeEvent<HTMLInputElement>): void => {
     const { value, checked } = e.target;
-    const [hours, minutes] = value.split(':');
+    const selectedTime = times.find(time => time.id === parseInt(value));
+    if (!selectedTime) {
+      return console.error(
+        `id ${parseInt(value)}의 time 데이터를 찾지 못했습니다.`,
+      );
+    }
+    const [hours, minutes] = selectedTime.startTime.split(':');
     const checkedDateTime = moment(selectedDateTime);
+
     checkedDateTime.set('hours', parseInt(hours));
     checkedDateTime.set('minutes', parseInt(minutes));
 
-    if (checked) {
-      setCheckedDateTime(prev => prev.concat(checkedDateTime));
-    } else {
-      setCheckedDateTime(prev =>
-        prev.filter(datetime => !datetime.isSame(checkedDateTime)),
-      );
-    }
+    setTimes(prev =>
+      prev.map(time => ({
+        ...time,
+        active: time.id === parseInt(value) ? checked : time.active,
+      })),
+    );
   };
 
   return (
@@ -162,31 +200,20 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
             />
             <Schedule>
               <TimeTable>
-                {_.range(9, 18.5, 0.5).map(hour => {
-                  const start = moment(selectedDateTime)
-                    .set('hours', Math.floor(hour))
-                    .set('minutes', (hour % 1) * 60);
-                  const end = start.clone().add(30, 'minutes');
-                  const startTime = start.format('HH:mm');
-                  const endTime = end.format('HH:mm');
-                  const checked = checkedDateTime.some(
-                    d => d.format('HH:mm') === startTime,
-                  );
-                  const reservedMeeting = reservations
-                    .filter(r => r.roomId === roomId)
-                    .find(
-                      r =>
-                        start.isSame(r.start) ||
-                        start.isBetween(r.start, r.end),
-                    );
-                  const isReserved = !!reservedMeeting;
-
-                  return (
-                    <Time key={hour} active={checked} disabled={isReserved}>
+                {times.map(
+                  ({
+                    id,
+                    active,
+                    reservedMeeting,
+                    isReserved,
+                    startTime,
+                    endTime,
+                  }) => (
+                    <Time key={id} active={active} disabled={isReserved}>
                       <input
                         type={'checkbox'}
-                        value={startTime}
-                        checked={checked}
+                        value={id}
+                        checked={active}
                         disabled={isReserved}
                         onChange={toggleSelectTime}
                       />
@@ -197,8 +224,8 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                         {reservedMeeting && reservedMeeting.title}
                       </span>
                     </Time>
-                  );
-                })}
+                  ),
+                )}
               </TimeTable>
             </Schedule>
           </RoomInfo>

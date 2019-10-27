@@ -40,4 +40,22 @@ export const MEETING_ROOMS = [
     width: 160,
     height: 170,
   },
+  /*{
+    id: 4,
+    floor: 19,
+    name: '제주',
+    x: 635,
+    y: 130,
+    width: 160,
+    height: 170,
+  },
+  {
+    id: 5,
+    floor: 19,
+    name: '몰디브',
+    x: 900,
+    y: 30,
+    width: 160,
+    height: 200,
+  },*/
 ];

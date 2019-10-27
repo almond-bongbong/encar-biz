@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
 import _ from 'lodash';
 import CustomScroll from 'react-custom-scroll';
@@ -54,18 +54,21 @@ const TimeSelect: React.FC<TimeSelectProps> = ({ onSelectTime }) => {
     <Container>
       <CustomScroll>
         <Content>
-          {_.range(9, 19).map(hour => (
-            <Fragment key={hour}>
+          {_.range(9, 18.5, 0.5).map(index => {
+            const hour = Math.floor(index);
+            const minutes = (index % 1) * 60;
+            const time = `${hour}:${minutes.toString().padStart(2, '0')}`;
+
+            return (
               <Time
-                onMouseDown={(): void => onSelectTime(`${hour}:30`)}
+                key={index}
+                onMouseDown={(): void => onSelectTime(time)}
                 isMobile={isMobile}
-              >{`${hour}:30`}</Time>
-              <Time
-                onMouseDown={(): void => onSelectTime(`${hour}:00`)}
-                isMobile={isMobile}
-              >{`${hour}:00`}</Time>
-            </Fragment>
-          ))}
+              >
+                {time}
+              </Time>
+            );
+          })}
         </Content>
       </CustomScroll>
     </Container>

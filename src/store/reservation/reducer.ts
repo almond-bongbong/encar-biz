@@ -4,8 +4,6 @@ import {
   FETCH_RESERVATIONS_SUCCESS,
   MINUS_30_MINUTES,
   SELECT_DATETIME,
-  SELECT_ROOM,
-  SET_IS_USE_ROOMS,
 } from './actions';
 import { createReducer } from 'typesafe-actions';
 import { DATETIME_FORMAT } from 'types';
@@ -16,7 +14,6 @@ const initialState: ReservationState = {
   selectedDateTime: moment().format(DATETIME_FORMAT),
   selectedRoomId: null,
   reservations: [],
-  isUseRooms: [],
 };
 
 const reducer = createReducer<ReservationState, ReservationAction>(
@@ -37,14 +34,6 @@ const reducer = createReducer<ReservationState, ReservationAction>(
     [MINUS_30_MINUTES]: state => ({
       ...state,
       selectedDateTime: minus30Minutes(state.selectedDateTime),
-    }),
-    [SELECT_ROOM]: (state, action) => ({
-      ...state,
-      selectedRoomId: action.payload,
-    }),
-    [SET_IS_USE_ROOMS]: (state, action) => ({
-      ...state,
-      isUseRooms: action.payload,
     }),
   },
 );

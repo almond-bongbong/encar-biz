@@ -21,6 +21,7 @@ interface RoomProps extends ContainerProps {
   meetings: Meeting[];
   selected: boolean;
   onClickRoom: (roomId: number) => void;
+  isSwiping?: boolean;
 }
 
 const Container = styled.div<ContainerProps>`
@@ -88,6 +89,7 @@ const Room: React.FC<RoomProps> = ({
   meetings,
   selected,
   onClickRoom,
+  isSwiping,
 }) => {
   const selectedDateTime = useSelector(
     (state: RootState) => state.reservation.selectedDateTime,
@@ -103,7 +105,9 @@ const Room: React.FC<RoomProps> = ({
   );
 
   const handleClickRoom = (): void => {
-    onClickRoom(id);
+    if (!isSwiping) {
+      onClickRoom(id);
+    }
   };
 
   return (
