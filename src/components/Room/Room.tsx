@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { memo, useMemo } from 'react';
 import styled from 'styled-components';
 import { Meeting } from 'types';
 import { useSelector } from 'react-redux';
@@ -58,8 +58,12 @@ const CurrentMeeting = styled.div`
   }
 `;
 
-const Marker = styled.img`
-  display: block;
+interface MarkerProps {
+  active: boolean;
+}
+
+const Marker = styled.img<MarkerProps>`
+  visibility: ${({ active }): string => (active ? 'visible' : 'hidden')};
   position: absolute;
   left: 50%;
   top: 50%;
@@ -110,6 +114,8 @@ const Room: React.FC<RoomProps> = ({
     }
   };
 
+  console.log(selected, selected ? 'active' : '', name);
+
   return (
     <>
       <Container
@@ -128,10 +134,10 @@ const Room: React.FC<RoomProps> = ({
             <em>{currentMeeting.title}</em> 진행중
           </CurrentMeeting>
         )}
-        {selected && <Marker src={redArrowDown} alt="" />}
+        <Marker active={selected} src={redArrowDown} alt="" />
       </Container>
     </>
   );
 };
 
-export default Room;
+export default memo(Room);

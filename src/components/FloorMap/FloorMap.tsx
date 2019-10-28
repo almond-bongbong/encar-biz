@@ -30,14 +30,9 @@ interface FloorProps {
   onClickRoom: (roomId: number) => void;
 }
 
-const FloorMap: React.FC<FloorProps> = ({
-  rooms,
-  onClickRoom,
-  isSwiping,
-  recommendRoom,
-}) => {
-  const reservations = useSelector(
-    (state: RootState) => state.reservation.reservations,
+const FloorMap: React.FC<FloorProps> = ({ rooms, onClickRoom, isSwiping }) => {
+  const { reservations, recommendRoom } = useSelector(
+    (state: RootState) => state.reservation,
   );
 
   return (

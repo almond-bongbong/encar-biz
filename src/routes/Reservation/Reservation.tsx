@@ -21,6 +21,7 @@ import {
   fetchReservations,
   minus30Minutes,
   selectDateTime,
+  setRecommendRoom,
 } from 'store/reservation';
 import { DATETIME_FORMAT, Meeting, Room } from 'types';
 import { RootState } from 'store';
@@ -28,7 +29,7 @@ import { SingleDatePicker } from 'react-dates';
 import ModalPopup from 'components/ModalPopup/ModalPopup';
 import RoomDetail from 'components/RoomDetail';
 import Loader from 'components/Loader';
-import FloorSlider from '../../components/FloorSlider';
+import FloorSlider from 'components/FloorSlider';
 
 type SelectedFloor = string | number;
 
@@ -112,7 +113,7 @@ const TabWrapper = styled(FloorTab)`
 const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const [showTimeSelect, setShowTimeSelect] = useState<boolean>(false);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
-  const { reservations, selectedDateTime } = useSelector(
+  const { reservations, selectedDateTime, recommendRoom } = useSelector(
     (state: RootState) => state.reservation,
   );
   const loading = useSelector((state: RootState) => state.loading);
@@ -129,25 +130,6 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     number | null
   >(null);
   const [eventLivingTimer, setEventLivingTimer] = useState<number | null>(null);
-  const recommendRoom = useMemo(() => {
-    if (reservations.length > 0) {
-      const currentFloor = sliderIndex === 0 ? 18 : 19;
-      const inUsedRooms = MEETING_ROOMS.filter((room: Room) =>
-        reservations.some(
-          (r: Meeting) =>
-            room.id === r.roomId &&
-            selectedDateTimeMoment.isBetween(r.start, r.end),
-        ),
-      );
-      const unUsedRooms = MEETING_ROOMS.filter(
-        (room: Room) =>
-          !inUsedRooms.some((r: Room) => room.id === r.id) &&
-          room.floor === currentFloor,
-      );
-      const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
-      return unUsedRooms[randomIndex] || CANTEEN;
-    }
-  }, [reservations, selectedDateTimeMoment, sliderIndex]);
 
   const changeFloor = useCallback(
     (floor: SelectedFloor): void => {
@@ -193,6 +175,27 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
       }, 60 * 1000),
     );
   }, [startInterval, eventLivingTimer, selectedDateTimeInterval]);
+
+  useEffect(() => {
+    if (reservations.length > 0) {
+      const currentFloor = sliderIndex === 0 ? 18 : 19;
+      const inUsedRooms = MEETING_ROOMS.filter((room: Room) =>
+        reservations.some(
+          (r: Meeting) =>
+            room.id === r.roomId &&
+            selectedDateTimeMoment.isBetween(r.start, r.end),
+        ),
+      );
+      const unUsedRooms = MEETING_ROOMS.filter(
+        (room: Room) =>
+          !inUsedRooms.some((r: Room) => room.id === r.id) &&
+          room.floor === currentFloor,
+      );
+      const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
+
+      dispatch(setRecommendRoom(unUsedRooms[randomIndex] || CANTEEN));
+    }
+  }, [reservations, selectedDateTimeMoment, sliderIndex, dispatch]);
 
   useEffect(() => {
     window.addEventListener('mousedown', liveEventListener);
@@ -319,7 +322,6 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
             sliderRef={slider}
             sliderIndex={sliderIndex}
             onChangeFloor={changeFloor}
-            recommendRoom={recommendRoom}
             onClickRoom={handleClickRoom}
           />
 

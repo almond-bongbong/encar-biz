@@ -1,10 +1,9 @@
-import React, { RefObject, useMemo, useState, memo } from 'react';
+import React, { memo, RefObject, useMemo, useState } from 'react';
 import Slider, { Settings } from 'react-slick';
 import FloorMap from 'components/FloorMap';
 import { MEETING_ROOMS } from 'constants/meetingRoom';
 import SliderArrow from 'components/SliderArrow';
 import { Room } from 'types';
-import _ from 'lodash';
 
 interface FloorSliderProps {
   sliderRef: RefObject<Slider>;
@@ -18,7 +17,6 @@ const FloorSlider: React.FC<FloorSliderProps> = ({
   sliderRef,
   sliderIndex,
   onChangeFloor,
-  recommendRoom,
   onClickRoom,
 }) => {
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
@@ -45,13 +43,11 @@ const FloorSlider: React.FC<FloorSliderProps> = ({
     <Slider ref={sliderRef} {...sliderSettings}>
       <FloorMap
         rooms={MEETING_ROOMS.filter(r => r.floor === 18)}
-        recommendRoom={recommendRoom}
         onClickRoom={onClickRoom}
         isSwiping={isSwiping}
       />
       <FloorMap
         rooms={MEETING_ROOMS.filter(r => r.floor === 19)}
-        recommendRoom={recommendRoom}
         onClickRoom={onClickRoom}
         isSwiping={isSwiping}
       />
@@ -59,7 +55,4 @@ const FloorSlider: React.FC<FloorSliderProps> = ({
   );
 };
 
-export default memo(FloorSlider, (prevProps, nextProps) => {
-  console.log(prevProps, nextProps);
-  return prevProps.recommendRoom === nextProps.recommendRoom;
-});
+export default memo(FloorSlider);
