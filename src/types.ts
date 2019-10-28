@@ -20,4 +20,5 @@ export interface Room {
   y: number;
   width: number;
   height: number;
+  tags?: string[];
 }

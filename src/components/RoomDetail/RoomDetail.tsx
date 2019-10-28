@@ -29,6 +29,7 @@ interface Time {
 
 const Container = styled.div`
   width: 1000px;
+  height: 1000px;
   padding: 50px;
   background-color: #fff;
 `;
@@ -41,7 +42,7 @@ const Title = styled.h2`
 `;
 
 const RoomInfo = styled.div`
-  ${clearfix}
+  float: left;
 `;
 
 const Photo = styled.img`
@@ -49,6 +50,10 @@ const Photo = styled.img`
   float: left;
   width: 400px;
   box-shadow: 2px 2px 4px 3px rgba(0, 0, 0, 0.2);
+`;
+
+const Content = styled.div`
+  ${clearfix}
 `;
 
 const Schedule = styled.div`
@@ -108,6 +113,20 @@ const SelectedDate = styled.div`
   font-size: 18px;
   text-decoration: underline;
   text-align: left;
+`;
+
+const Tags = styled.ul`
+  font-size: 0;
+`;
+
+const Tag = styled.li`
+  display: inline-block;
+  font-size: 14px;
+  vertical-align: middle;
+
+  & + & {
+    margin-left: 10px;
+  }
 `;
 
 const ReservationArea = styled.div`
@@ -191,13 +210,22 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
           <SelectedDate>
             {moment(selectedDateTime).format('YYYY.MM.DD')}
           </SelectedDate>
-          <RoomInfo>
-            <Photo
-              src={
-                'https://campusu.co.kr/wp-content/uploads/2016/12/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_KENN4462-1.jpg'
-              }
-              alt={'회의실 전경'}
-            />
+          <Content>
+            <RoomInfo>
+              <Photo
+                src={
+                  'https://campusu.co.kr/wp-content/uploads/2016/12/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_KENN4462-1.jpg'
+                }
+                alt={'회의실 전경'}
+              />
+              {roomData.tags && (
+                <Tags>
+                  {roomData.tags.map(tag => (
+                    <Tag key={tag}>{`#${tag}`}</Tag>
+                  ))}
+                </Tags>
+              )}
+            </RoomInfo>
             <Schedule>
               <TimeTable>
                 {times.map(
@@ -228,7 +256,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                 )}
               </TimeTable>
             </Schedule>
-          </RoomInfo>
+          </Content>
           <ReservationArea>
             <Button
               width={130}

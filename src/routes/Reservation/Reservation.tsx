@@ -12,9 +12,7 @@ import styled from 'styled-components';
 import moment, { Moment } from 'moment';
 import 'moment/locale/ko';
 import { CANTEEN, MEETING_ROOMS } from 'constants/meetingRoom';
-import FloorMap from 'components/FloorMap';
-import Slider, { Settings } from 'react-slick';
-import SliderArrow from 'components/SliderArrow';
+import Slider from 'react-slick';
 import TimeSelect from 'components/TimeSelect';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -30,6 +28,7 @@ import { SingleDatePicker } from 'react-dates';
 import ModalPopup from 'components/ModalPopup/ModalPopup';
 import RoomDetail from 'components/RoomDetail';
 import Loader from 'components/Loader';
+import FloorSlider from '../../components/FloorSlider';
 
 type SelectedFloor = string | number;
 
@@ -122,9 +121,8 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   ]);
   const { search } = useLocation();
   const { floor } = qs.parse(search);
-  const slierIndex = floor === '18' ? 0 : 1;
+  const sliderIndex = floor === '18' ? 0 : 1;
   const slider = useRef<Slider>(null);
-  const [isSwiping, setIsSwiping] = useState<boolean>(false);
   const dispatch = useDispatch();
   const [detailRoomId, setDetailRoomId] = useState<number | null>(null);
   const [selectedDateTimeInterval, setSelectedDateTimeInterval] = useState<
@@ -133,6 +131,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   const [eventLivingTimer, setEventLivingTimer] = useState<number | null>(null);
   const recommendRoom = useMemo(() => {
     if (reservations.length > 0) {
+      const currentFloor = sliderIndex === 0 ? 18 : 19;
       const inUsedRooms = MEETING_ROOMS.filter((room: Room) =>
         reservations.some(
           (r: Meeting) =>
@@ -141,37 +140,20 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
         ),
       );
       const unUsedRooms = MEETING_ROOMS.filter(
-        (room: Room) => !inUsedRooms.some((r: Room) => room.id === r.id),
+        (room: Room) =>
+          !inUsedRooms.some((r: Room) => room.id === r.id) &&
+          room.floor === currentFloor,
       );
       const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
       return unUsedRooms[randomIndex] || CANTEEN;
     }
-  }, [reservations, selectedDateTimeMoment]);
+  }, [reservations, selectedDateTimeMoment, sliderIndex]);
 
   const changeFloor = useCallback(
     (floor: SelectedFloor): void => {
       history.push(`/?floor=${floor}`);
     },
     [history],
-  );
-
-  const SLIDER_SETTINGS = useMemo<Settings>(
-    () => ({
-      speed: 400,
-      infinite: false,
-      initialSlide: slierIndex,
-      prevArrow: <SliderArrow direction={'left'} />,
-      nextArrow: <SliderArrow direction={'right'} />,
-      beforeChange: (): void => {
-        setIsSwiping(true);
-      },
-      afterChange: (currentSlide: number): void => {
-        setIsSwiping(false);
-        const newFloor = currentSlide === 0 ? '18' : '19';
-        changeFloor(newFloor);
-      },
-    }),
-    [slierIndex, changeFloor],
   );
 
   const handleKeyPress = useCallback(
@@ -215,10 +197,12 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   useEffect(() => {
     window.addEventListener('mousedown', liveEventListener);
     window.addEventListener('touchstart', liveEventListener);
+    window.addEventListener('keydown', liveEventListener);
 
     return (): void => {
       window.removeEventListener('mousedown', liveEventListener);
       window.removeEventListener('touchstart', liveEventListener);
+      window.removeEventListener('keydown', liveEventListener);
     };
   }, [liveEventListener]);
 
@@ -230,24 +214,6 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     dispatch(fetchReservations.request());
   }, [dispatch]);
 
-  // useEffect(() => {
-  //   if (reservations) {
-  //     const unUsedRooms = MEETING_ROOMS.filter(
-  //       room => !isUseRooms.some(isUseRoom => isUseRoom.id === room.id),
-  //     );
-  //     const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
-  //     const randomRoom = unUsedRooms[randomIndex];
-  //
-  //     console.log(randomRoom);
-  //
-  //     if (randomRoom) {
-  //       dispatch(selectRoom(unUsedRooms[randomIndex].id));
-  //     } else {
-  //       dispatch(selectRoom(null));
-  //     }
-  //   }
-  // }, [dispatch]);
-
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
 
@@ -258,9 +224,9 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     if (slider.current) {
-      slider.current.slickGoTo(slierIndex);
+      slider.current.slickGoTo(sliderIndex);
     }
-  }, [floor, slierIndex]);
+  }, [floor, sliderIndex]);
 
   const handleTime = (selectedTime: string): void => {
     const [hour, minutes] = selectedTime.split(':');
@@ -349,20 +315,13 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
             )}
           </RecommendArea>
 
-          <Slider ref={slider} {...SLIDER_SETTINGS}>
-            <FloorMap
-              rooms={MEETING_ROOMS.filter(r => r.floor === 18)}
-              recommendRoom={recommendRoom}
-              onClickRoom={handleClickRoom}
-              isSwiping={isSwiping}
-            />
-            <FloorMap
-              rooms={MEETING_ROOMS.filter(r => r.floor === 19)}
-              recommendRoom={recommendRoom}
-              onClickRoom={handleClickRoom}
-              isSwiping={isSwiping}
-            />
-          </Slider>
+          <FloorSlider
+            sliderRef={slider}
+            sliderIndex={sliderIndex}
+            onChangeFloor={changeFloor}
+            recommendRoom={recommendRoom}
+            onClickRoom={handleClickRoom}
+          />
 
           <ModalPopup
             show={detailRoomId != null}

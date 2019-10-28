@@ -12,7 +12,16 @@ export const MEETING_ROOMS = [
     width: 110,
     height: 160,
   },
-  { id: 0, floor: 19, name: '발리', x: 130, y: 40, width: 110, height: 160 },
+  {
+    id: 0,
+    floor: 19,
+    name: '발리',
+    x: 130,
+    y: 40,
+    width: 110,
+    height: 160,
+    tags: ['TV'],
+  },
   {
     id: 1,
     floor: 19,
@@ -21,6 +30,7 @@ export const MEETING_ROOMS = [
     y: 200,
     width: 110,
     height: 160,
+    tags: ['TV'],
   },
   {
     id: 2,
@@ -30,6 +40,7 @@ export const MEETING_ROOMS = [
     y: 360,
     width: 110,
     height: 140,
+    tags: ['밖에서잘안보임', 'TV'],
   },
   {
     id: 3,
@@ -39,6 +50,7 @@ export const MEETING_ROOMS = [
     y: 330,
     width: 160,
     height: 170,
+    tags: ['TV'],
   },
   /*{
     id: 4,
