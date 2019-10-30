@@ -18,7 +18,6 @@ export interface Room {
   name: string;
   x: number;
   y: number;
-  width: number;
-  height: number;
+  coords: string;
   tags?: string[];
 }

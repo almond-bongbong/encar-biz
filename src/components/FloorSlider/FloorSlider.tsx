@@ -4,6 +4,8 @@ import FloorMap from 'components/FloorMap';
 import { MEETING_ROOMS } from 'constants/meetingRoom';
 import SliderArrow from 'components/SliderArrow';
 import { Room } from 'types';
+import floorPlan18 from 'resources/images/reservation/floor-plan-18.png';
+import floorPlan19 from 'resources/images/reservation/floor-plan-19.png';
 
 interface FloorSliderProps {
   sliderRef: RefObject<Slider>;
@@ -42,11 +44,15 @@ const FloorSlider: React.FC<FloorSliderProps> = ({
   return (
     <Slider ref={sliderRef} {...sliderSettings}>
       <FloorMap
+        floor={18}
+        floorPlan={floorPlan18}
         rooms={MEETING_ROOMS.filter(r => r.floor === 18)}
         onClickRoom={onClickRoom}
         isSwiping={isSwiping}
       />
       <FloorMap
+        floor={19}
+        floorPlan={floorPlan19}
         rooms={MEETING_ROOMS.filter(r => r.floor === 19)}
         onClickRoom={onClickRoom}
         isSwiping={isSwiping}

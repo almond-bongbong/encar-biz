@@ -80,7 +80,7 @@ const Recommend = styled.p`
   font-size: 28px;
 
   em {
-    margin: 0 5px;
+    margin-right: 5px;
     font-size: 40px;
     text-decoration: underline;
   }
@@ -88,13 +88,17 @@ const Recommend = styled.p`
 
 const TimeButton = styled.button`
   display: inline-block;
-  font-size: 34px;
+  font-size: 40px;
+`;
+
+const Now = styled.span`
+  margin-right: 10px;
+  font-size: 30px;
 `;
 
 const Second = styled.span`
   margin-left: 10px;
-  color: #666;
-  font-size: 24px;
+  font-size: 22px;
 `;
 
 const TabWrapper = styled(FloorTab)`
@@ -299,6 +303,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
               onFocus={(): void => setShowTimeSelect(true)}
               onBlur={(): void => setShowTimeSelect(false)}
             >
+              {selectedDateTimeInterval && <Now>지금</Now>}
               {selectedDateTimeMoment.format(`A h시 m분`)}
               {selectedDateTimeInterval && (
                 <Second>{`${moment().format('ss')}초`}</Second>
@@ -307,7 +312,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
 
             {recommendRoom && (
               <Recommend>
-                지금 <em>{recommendRoom.name}</em> 어때?
+                <em>{recommendRoom.name}</em> 어때?
               </Recommend>
             )}
 
