@@ -11,7 +11,7 @@ export default createGlobalStyle`
     touch-action: manipulation;
   }
   body {
-    font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-family: 'Noto Sans KR',-apple-system,system-ui,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
     color: #333;
     line-height: 1.5;
   }

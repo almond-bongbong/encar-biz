@@ -1,9 +1,7 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import styled from 'styled-components';
 import { Meeting } from 'types';
-import { useSelector } from 'react-redux';
-import { RootState } from 'store';
-import moment from 'moment';
+import useIsUseRoom from 'hooks/useIsUseRoom';
 
 interface ContainerProps {
   x: number;
@@ -34,28 +32,18 @@ const Container = styled.div<ContainerProps>`
 const Title = styled.div<TitleProps>`
   padding: 0 5px;
   color: ${({ inUse }): string => (inUse ? '#666' : '#333')};
-  font-weight: 700;
-  font-size: 20px;
+  font-family: 'Jua', sans-serif;
+  font-weight: 600;
+  font-size: 22px;
 `;
 
-const Room: React.FC<RoomProps> = ({ id, name, x, y, meetings }) => {
-  const selectedDateTime = useSelector(
-    (state: RootState) => state.reservation.selectedDateTime,
-  );
-  const currentMeeting = useMemo(
-    () =>
-      meetings.find(
-        r =>
-          r.roomId === id && moment(selectedDateTime).isBetween(r.start, r.end),
-        [id, meetings, selectedDateTime],
-      ),
-    [id, selectedDateTime, meetings],
-  );
+const Room: React.FC<RoomProps> = ({ id, name, x, y }) => {
+  const isUseRoom = useIsUseRoom(id);
 
   return (
     <>
-      <Container inUse={!!currentMeeting} x={x} y={y}>
-        <Title inUse={!!currentMeeting}>{name}</Title>
+      <Container inUse={!!isUseRoom} x={x} y={y}>
+        <Title inUse={!!isUseRoom}>{name}</Title>
       </Container>
     </>
   );

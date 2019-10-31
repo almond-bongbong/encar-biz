@@ -4,13 +4,15 @@ import { MEETING_ROOMS } from 'constants/meetingRoom';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 
-function UseIsUseRoom(roomId: number): Room | null | undefined {
-  const reservations = useSelector(
-    (state: RootState) => state.reservation.reservations,
+function useIsUseRoom(roomId: number): Room | null | undefined {
+  const { reservations, selectedDateTime } = useSelector(
+    (state: RootState) => state.reservation,
   );
 
   const reservation = reservations.find(
-    (r: Meeting) => r.roomId === roomId && moment().isBetween(r.start, r.end),
+    (r: Meeting) =>
+      r.roomId === roomId &&
+      moment(selectedDateTime).isBetween(r.start, r.end, undefined, '[]'),
   );
 
   return (
@@ -18,4 +20,4 @@ function UseIsUseRoom(roomId: number): Room | null | undefined {
   );
 }
 
-export default UseIsUseRoom;
+export default useIsUseRoom;

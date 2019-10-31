@@ -38,7 +38,7 @@ export const RESERVATIONS = [
   {
     roomId: 5,
     title: '산토리니 면접',
-    start: '2019-10-30 10:00',
-    end: '2019-10-31 18:00',
+    start: '2019-11-01 01:00',
+    end: '2019-11-01 13:00',
   },
 ];

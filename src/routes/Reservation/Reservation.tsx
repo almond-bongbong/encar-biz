@@ -44,7 +44,7 @@ const LoaderWrapper = styled.div`
 
 const TimeSelectContainer = styled.div`
   position: absolute;
-  top: 90px;
+  top: 100px;
   left: 0;
   z-index: 100;
   background-color: #fff;
@@ -53,6 +53,7 @@ const TimeSelectContainer = styled.div`
 
 const DatePickerWrapper = styled.div`
   display: block;
+  font-family: 'Jua', sans-serif;
   vertical-align: middle;
 
   & .DateInput {
@@ -64,6 +65,7 @@ const DatePickerWrapper = styled.div`
     color: #444;
     font-weight: 400;
     font-size: 22px;
+    font-family: inherit;
   }
 
   & .DateInput_fang {
@@ -77,6 +79,7 @@ const RecommendArea = styled.div`
 
 const Recommend = styled.p`
   margin-top: 10px;
+  font-family: 'Jua', sans-serif;
   font-size: 28px;
 
   em {
@@ -89,6 +92,7 @@ const Recommend = styled.p`
 const TimeButton = styled.button`
   display: inline-block;
   font-size: 40px;
+  font-family: 'Jua', sans-serif;
 `;
 
 const Now = styled.span`
@@ -187,19 +191,32 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
         reservations.some(
           (r: Meeting) =>
             room.id === r.roomId &&
-            selectedDateTimeMoment.isBetween(r.start, r.end),
+            selectedDateTimeMoment.isBetween(r.start, r.end, undefined, '[]'),
         ),
       );
-      const unUsedRooms = MEETING_ROOMS.filter(
+      const unUsedRoomsOnFloor = MEETING_ROOMS.filter(
         (room: Room) =>
           !inUsedRooms.some((r: Room) => room.id === r.id) &&
           room.floor === currentFloor,
       );
-      const randomIndex = Math.floor(Math.random() * unUsedRooms.length);
 
-      dispatch(setRecommendRoom(unUsedRooms[randomIndex] || CANTEEN));
+      if (
+        !recommendRoom ||
+        !unUsedRoomsOnFloor.find(room => room.id === recommendRoom.id)
+      ) {
+        const randomIndex = Math.floor(
+          Math.random() * unUsedRoomsOnFloor.length,
+        );
+        dispatch(setRecommendRoom(unUsedRoomsOnFloor[randomIndex] || CANTEEN));
+      }
     }
-  }, [reservations, selectedDateTimeMoment, sliderIndex, dispatch]);
+  }, [
+    recommendRoom,
+    reservations,
+    selectedDateTimeMoment,
+    sliderIndex,
+    dispatch,
+  ]);
 
   useEffect(() => {
     window.addEventListener('mousedown', liveEventListener);

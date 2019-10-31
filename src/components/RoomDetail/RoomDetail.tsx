@@ -29,7 +29,7 @@ interface Time {
 
 const Container = styled.div`
   width: 1000px;
-  height: 1000px;
+  height: 900px;
   padding: 50px;
   background-color: #fff;
 `;
@@ -58,11 +58,22 @@ const Content = styled.div`
 
 const Schedule = styled.div`
   float: right;
+  position: relative;
   width: 350px;
   text-align: left;
 `;
 
-const TimeTable = styled.div``;
+const SelectedDate = styled.div`
+  position: absolute;
+  top: -40px;
+  left: 0;
+  font-weight: 700;
+  font-size: 18px;
+`;
+
+const TimeTable = styled.div`
+  border: 1px solid #eee;
+`;
 
 interface TimeProps {
   active: boolean;
@@ -78,6 +89,16 @@ const Time = styled.label<TimeProps>`
   white-space: nowrap;
   max-width: 100%;
   cursor: pointer;
+
+  & > input {
+    ${hidden}
+  }
+
+  & .time {
+    margin-right: 10px;
+    color: #888;
+  }
+
   ${({ disabled }): SimpleInterpolation =>
     disabled
       ? css`
@@ -88,40 +109,25 @@ const Time = styled.label<TimeProps>`
     active
       ? css`
           background-color: ${blue};
+
+          & .time {
+            color: #fff;
+          }
         `
       : css`
-          background-color: #eee;
+          background-color: #fff;
         `};
-
-  & > input {
-    ${hidden}
-  }
-
-  & + & {
-    margin-top: 5px;
-  }
-
-  & .time {
-    margin-right: 10px;
-    color: #888;
-  }
-`;
-
-const SelectedDate = styled.div`
-  margin-bottom: 10px;
-  font-weight: 700;
-  font-size: 18px;
-  text-decoration: underline;
-  text-align: left;
 `;
 
 const Tags = styled.ul`
+  margin-top: 10px;
   font-size: 0;
+  text-align: left;
 `;
 
 const Tag = styled.li`
   display: inline-block;
-  font-size: 14px;
+  font-size: 13px;
   vertical-align: middle;
 
   & + & {
@@ -160,7 +166,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
       const endTime = end.format('HH:mm');
       const reservedMeeting = reservations
         .filter(r => r.roomId === roomId)
-        .find(r => start.isSame(r.start) || start.isBetween(r.start, r.end));
+        .find(r => start.isBetween(r.start, r.end, undefined, '[)'));
       const isReserved = !!reservedMeeting;
       const active =
         !isReserved &&
@@ -207,9 +213,6 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
       {roomData && (
         <>
           <Title>{roomData.name}</Title>
-          <SelectedDate>
-            {moment(selectedDateTime).format('YYYY.MM.DD')}
-          </SelectedDate>
           <Content>
             <RoomInfo>
               <Photo
@@ -227,6 +230,9 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
               )}
             </RoomInfo>
             <Schedule>
+              <SelectedDate>
+                {moment(selectedDateTime).format('YYYY.MM.DD')}
+              </SelectedDate>
               <TimeTable>
                 {times.map(
                   ({
