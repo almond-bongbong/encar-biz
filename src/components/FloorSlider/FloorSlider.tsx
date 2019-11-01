@@ -25,6 +25,8 @@ const FloorSlider: React.FC<FloorSliderProps> = ({
   const sliderSettings = useMemo<Settings>(
     () => ({
       speed: 400,
+      vertical: true,
+      verticalSwiping: true,
       infinite: false,
       initialSlide: sliderIndex,
       prevArrow: <SliderArrow direction={'left'} />,

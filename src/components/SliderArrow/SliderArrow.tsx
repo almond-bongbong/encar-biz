@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { CustomArrowProps } from 'react-slick';
 import { ArrowLeft, ArrowRight } from 'icons';
+import stair from 'resources/images/reservation/stair.png';
 
 interface SliderArrowProps extends CustomArrowProps {
   className?: string;
@@ -11,6 +12,10 @@ interface SliderArrowProps extends CustomArrowProps {
 const Button = styled.button`
   padding: 10px;
   border: 0;
+`;
+
+const Stair = styled.img`
+  width: 200px;
 `;
 
 const SliderArrow: React.FC<SliderArrowProps> = ({
@@ -25,6 +30,7 @@ const SliderArrow: React.FC<SliderArrowProps> = ({
 
   return (
     <Button type={'button'} className={className} onClick={onClick}>
+      <Stair src={stair} alt="다음 층" />
       {direction === 'left' && !first && <ArrowLeft />}
       {direction === 'right' && !last && <ArrowRight />}
     </Button>
