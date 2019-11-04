@@ -8,5 +8,7 @@ declare module 'styled-components' {
     grey: string;
     yellow: string;
     green: string;
+    basicFont: string;
+    primaryFont: string;
   }
 }

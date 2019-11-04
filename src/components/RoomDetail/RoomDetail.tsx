@@ -97,6 +97,7 @@ const Time = styled.label<TimeProps>`
   & .time {
     margin-right: 10px;
     color: #888;
+    font-family: ${({ theme }): string => theme.basicFont};
   }
 
   ${({ disabled }): SimpleInterpolation =>

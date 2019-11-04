@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import styled from 'styled-components';
 import { Meeting } from 'types';
-import useIsUseRoom from 'hooks/useIsUseRoom';
+import useIsUseRoom from 'hooks/reservation/useIsUseRoom';
 
 interface ContainerProps {
   x: number;
@@ -32,8 +32,6 @@ const Container = styled.div<ContainerProps>`
 const Title = styled.div<TitleProps>`
   padding: 0 5px;
   color: ${({ inUse }): string => (inUse ? '#666' : '#333')};
-  font-family: 'Jua', sans-serif;
-  font-weight: 600;
   font-size: 22px;
 `;
 

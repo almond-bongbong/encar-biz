@@ -11,7 +11,7 @@ export default createGlobalStyle`
     touch-action: manipulation;
   }
   body {
-    font-family: 'Noto Sans KR',-apple-system,system-ui,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+    font-family: ${({ theme }): string => theme.primaryFont};
     color: #333;
     line-height: 1.5;
   }
@@ -25,14 +25,12 @@ export default createGlobalStyle`
     border: 0;
     background-color: transparent;
     cursor: pointer;
+    font-family: ${({ theme }): string => theme.primaryFont};
     -webkit-tap-highlight-color:  rgba(255, 255, 255, 0); 
     &:focus,
     &:active {
       outline: 0;
     }
-  }
-   h1,h2,h3,h4,h5,h6{
-    font-family:'Maven Pro', sans-serif;
   }
   .CalendarDay {
     vertical-align: middle;

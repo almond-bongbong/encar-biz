@@ -30,6 +30,7 @@ import ModalPopup from 'components/ModalPopup/ModalPopup';
 import RoomDetail from 'components/RoomDetail';
 import Loader from 'components/Loader';
 import FloorSlider from 'components/FloorSlider';
+import { useChangeFloor } from 'hooks/reservation';
 
 type SelectedFloor = string | number;
 
@@ -53,7 +54,6 @@ const TimeSelectContainer = styled.div`
 
 const DatePickerWrapper = styled.div`
   display: block;
-  font-family: 'Jua', sans-serif;
   vertical-align: middle;
 
   & .DateInput {
@@ -79,7 +79,6 @@ const RecommendArea = styled.div`
 
 const Recommend = styled.p`
   margin-top: 10px;
-  font-family: 'Jua', sans-serif;
   font-size: 28px;
 
   em {
@@ -92,7 +91,6 @@ const Recommend = styled.p`
 const TimeButton = styled.button`
   display: inline-block;
   font-size: 40px;
-  font-family: 'Jua', sans-serif;
 `;
 
 const Now = styled.span`
@@ -118,7 +116,11 @@ const TabWrapper = styled(FloorTab)`
   }
 `;
 
-const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
+const FloorSliderWrapper = styled.div`
+  margin-top: 30px;
+`;
+
+const Reservation: React.FC<RouteComponentProps> = () => {
   const [showTimeSelect, setShowTimeSelect] = useState<boolean>(false);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const { reservations, selectedDateTime, recommendRoom } = useSelector(
@@ -130,7 +132,8 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
   ]);
   const { search } = useLocation();
   const { floor } = qs.parse(search);
-  const sliderIndex = floor === '18' ? 0 : 1;
+  const currentFloor = parseInt(floor ? floor.toString() : '18');
+  const sliderIndex = currentFloor === 18 ? 1 : 0;
   const slider = useRef<Slider>(null);
   const dispatch = useDispatch();
   const [detailRoomId, setDetailRoomId] = useState<number | null>(null);
@@ -138,12 +141,13 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
     number | null
   >(null);
   const [eventLivingTimer, setEventLivingTimer] = useState<number | null>(null);
+  const changeFloor = useChangeFloor();
 
-  const changeFloor = useCallback(
+  const handleFloor = useCallback(
     (floor: SelectedFloor): void => {
-      history.push(`/?floor=${floor}`);
+      changeFloor(floor);
     },
-    [history],
+    [changeFloor],
   );
 
   const handleKeyPress = useCallback(
@@ -186,7 +190,6 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     if (reservations.length > 0) {
-      const currentFloor = sliderIndex === 0 ? 18 : 19;
       const inUsedRooms = MEETING_ROOMS.filter((room: Room) =>
         reservations.some(
           (r: Meeting) =>
@@ -211,10 +214,10 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
       }
     }
   }, [
+    currentFloor,
     recommendRoom,
     reservations,
     selectedDateTimeMoment,
-    sliderIndex,
     dispatch,
   ]);
 
@@ -289,7 +292,7 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
         <>
           <TabWrapper
             value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
-            onClick={changeFloor}
+            onClick={handleFloor}
             items={[
               { value: '18', label: '18F.' },
               { value: '19', label: '19F.' },
@@ -340,12 +343,14 @@ const Reservation: React.FC<RouteComponentProps> = ({ history }) => {
             )}
           </RecommendArea>
 
-          <FloorSlider
-            sliderRef={slider}
-            sliderIndex={sliderIndex}
-            onChangeFloor={changeFloor}
-            onClickRoom={handleClickRoom}
-          />
+          <FloorSliderWrapper>
+            <FloorSlider
+              sliderRef={slider}
+              sliderIndex={sliderIndex}
+              onChangeFloor={handleFloor}
+              onClickRoom={handleClickRoom}
+            />
+          </FloorSliderWrapper>
 
           <ModalPopup
             show={detailRoomId != null}

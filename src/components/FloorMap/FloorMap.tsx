@@ -6,7 +6,9 @@ import { RootState } from 'store';
 import { Room } from 'types';
 import 'jquery';
 import ResponsiveImageMap from 'image-map';
+import Stair from 'components/Stair';
 import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
+import { useChangeFloor } from 'hooks/reservation';
 
 interface FloorProps {
   floor: number;
@@ -17,9 +19,7 @@ interface FloorProps {
   onClickRoom: (roomId: number) => void;
 }
 
-const Container = styled.div`
-  margin-top: 50px;
-`;
+const Container = styled.div``;
 
 const MapArea = styled.div`
   position: relative;
@@ -62,6 +62,20 @@ const Marker = styled.img<MarkerProps>`
   }
 `;
 
+const StairOn18 = styled(Stair)`
+  position: absolute;
+  top: 0;
+  left: 75%;
+  transform: translateX(-50%);
+`;
+
+const StairOn19 = styled(Stair)`
+  position: absolute;
+  bottom: 0;
+  left: 40%;
+  transform: translateX(-50%);
+`;
+
 const FloorMap: React.FC<FloorProps> = ({
   floor,
   floorPlan,
@@ -69,6 +83,8 @@ const FloorMap: React.FC<FloorProps> = ({
   onClickRoom,
   isSwiping,
 }) => {
+  const mapName = `image-map${floor}`;
+  const changeFloor = useChangeFloor();
   const { reservations, recommendRoom } = useSelector(
     (state: RootState) => state.reservation,
   );
@@ -78,17 +94,22 @@ const FloorMap: React.FC<FloorProps> = ({
   });
 
   const handleClickRoom = (id: number): void => {
+    console.log('click room');
     if (!isSwiping) {
       onClickRoom(id);
     }
   };
 
+  const handleFloor = (floor: number): void => {
+    changeFloor(floor);
+  };
+
   return (
     <Container>
       <MapArea>
-        <FloorImage src={floorPlan} alt="도면" useMap="#image-map" />
+        <FloorImage src={floorPlan} alt="도면" useMap={`#${mapName}`} />
 
-        <ImageMap name="image-map">
+        <ImageMap name={mapName}>
           {rooms.map(room => (
             <area
               key={room.id}
@@ -119,6 +140,13 @@ const FloorMap: React.FC<FloorProps> = ({
             src={redArrowDown}
             alt={`${recommendRoom.name} 회의실 추천`}
           />
+        )}
+
+        {floor === 18 && (
+          <StairOn18 direction={'up'} onClick={(): void => handleFloor(19)} />
+        )}
+        {floor === 19 && (
+          <StairOn19 direction={'down'} onClick={(): void => handleFloor(18)} />
         )}
       </MapArea>
     </Container>
