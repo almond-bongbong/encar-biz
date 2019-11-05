@@ -5,6 +5,7 @@ import hexToRGB from 'lib/hexToRGB';
 import { rotation } from 'style/animations';
 
 interface LoaderProps {
+  className?: string;
   color: 'red' | 'blue' | 'white' | 'gray' | 'yellow';
   size: number;
 }
@@ -53,8 +54,12 @@ export const Container = styled.div<LoaderProps>`
   }
 `;
 
-const Loader: React.FC<LoaderProps> = ({ color = 'red', size = 60 }) => (
-  <Container color={color} size={size}>
+const Loader: React.FC<LoaderProps> = ({
+  className,
+  color = 'red',
+  size = 60,
+}) => (
+  <Container className={className} color={color} size={size}>
     <div className="circle-loader" title="로딩중" />
   </Container>
 );

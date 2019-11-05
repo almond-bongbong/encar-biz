@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { CustomArrowProps } from 'react-slick';
 import stair from 'resources/images/reservation/stair.png';
-import { ArrowRight } from 'icons';
+import { ArrowRightIcon } from 'icons';
 
 interface SliderArrowProps extends CustomArrowProps {
   className?: string;
@@ -23,7 +23,7 @@ const StairImg = styled.img`
   width: 150px;
 `;
 
-const DirectionArrow = styled(ArrowRight)<DirectionArrow>`
+const DirectionArrow = styled(ArrowRightIcon)<DirectionArrow>`
   position: absolute;
   top: 30px;
   left: 0;

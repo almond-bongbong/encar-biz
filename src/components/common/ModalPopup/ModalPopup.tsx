@@ -11,6 +11,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
 import { addRootElement } from 'lib/generateElement';
 import { createPortal } from 'react-dom';
+import { CloseIcon } from 'icons';
 
 interface PopupContentProps {
   scrolling: number;
@@ -20,6 +21,7 @@ interface ModalPopupProps {
   children: React.ReactNode;
   show: boolean;
   onClickDim?: () => void;
+  onCloseButton?: () => void;
   keyPressESC?: () => void;
 }
 
@@ -76,12 +78,20 @@ const PopupContent = styled.div<PopupContentProps>`
   }
 `;
 
+const CloseButton = styled.button`
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 20px;
+`;
+
 addRootElement('popup-container');
 
 const ModalPopup: React.FC<ModalPopupProps> = ({
   show = false,
   children,
   onClickDim,
+  onCloseButton,
   keyPressESC,
 }) => {
   const popupEl = useMemo(() => document.createElement('div'), []);
@@ -150,6 +160,11 @@ const ModalPopup: React.FC<ModalPopupProps> = ({
                   >
                     <div className="content" ref={contentRef}>
                       {children}
+                      {onCloseButton && (
+                        <CloseButton onClick={onCloseButton}>
+                          <CloseIcon width={20} height={20} />
+                        </CloseButton>
+                      )}
                     </div>
                   </div>
                 </PopupContent>

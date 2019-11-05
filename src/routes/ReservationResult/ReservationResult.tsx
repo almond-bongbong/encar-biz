@@ -1,12 +1,19 @@
 import React from 'react';
-import moment from 'moment';
 import styled from 'styled-components';
+import { Button } from 'components/common';
 
-const Recommend = styled.div`
+interface ReservationResultProps {
+  onClose: () => void;
+}
+
+const Container = styled.div`
+  width: 400px;
+  padding: 50px;
+  background-color: #fff;
   font-size: 28px;
 
   p {
-    margin-top: 10px;
+    margin-bottom: 30px;
 
     em {
       margin: 0 5px;
@@ -16,27 +23,14 @@ const Recommend = styled.div`
   }
 `;
 
-const ReservationResult: React.FC = () => {
-  const nowTime = moment().format(`A h시 m분`);
-
+const ReservationResult: React.FC<ReservationResultProps> = ({ onClose }) => {
   return (
-    <div>
-      <Recommend>
-        <div className="time">{nowTime}</div>
-        <p>
-          지금 <em>산토리니</em> 예약완료!
-        </p>
-        <div
-          style={{
-            marginTop: 30,
-            padding: '30px 30px 200px',
-            backgroundColor: '#eee',
-          }}
-        >
-          예약 정보
-        </div>
-      </Recommend>
-    </div>
+    <Container>
+      <p>
+        <em>산토리니</em> 예약완료!
+      </p>
+      <Button onClick={onClose}>확인</Button>
+    </Container>
   );
 };
 

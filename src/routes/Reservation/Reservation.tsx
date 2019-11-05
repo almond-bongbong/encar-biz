@@ -26,11 +26,11 @@ import {
 import { DATETIME_FORMAT, Meeting, Room } from 'types';
 import { RootState } from 'store';
 import { SingleDatePicker } from 'react-dates';
-import ModalPopup from 'components/ModalPopup/ModalPopup';
+import { ModalPopup, Loader } from 'components/common';
 import RoomDetail from 'components/RoomDetail';
-import Loader from 'components/Loader';
 import FloorSlider from 'components/FloorSlider';
 import { useChangeFloor } from 'hooks/reservation';
+import ReservationResult from '../ReservationResult';
 
 type SelectedFloor = string | number;
 
@@ -137,6 +137,9 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   const slider = useRef<Slider>(null);
   const dispatch = useDispatch();
   const [detailRoomId, setDetailRoomId] = useState<number | null>(null);
+  const [reservationResultId, setReservationResultId] = useState<number | null>(
+    null,
+  );
   const [selectedDateTimeInterval, setSelectedDateTimeInterval] = useState<
     number | null
   >(null);
@@ -282,6 +285,11 @@ const Reservation: React.FC<RouteComponentProps> = () => {
     setDetailRoomId(roomId);
   };
 
+  const handleSaveReservation = (reservationId: number): void => {
+    setDetailRoomId(null);
+    setReservationResultId(reservationId);
+  };
+
   return (
     <Content>
       {loading[FETCH_RESERVATIONS_REQUEST] ? (
@@ -361,15 +369,20 @@ const Reservation: React.FC<RouteComponentProps> = () => {
                 selectedDateTime={selectedDateTime}
                 roomId={detailRoomId}
                 submitLoading={false}
-                onClickReservation={(): void => {}}
+                onSaveReservation={handleSaveReservation}
                 onClose={(): void => setDetailRoomId(null)}
               />
             )}
           </ModalPopup>
 
-          {/*<ModalPopup show={showResult} onClickDim={handleCloseResultPopup}>
-            <ReservationResult />
-          </ModalPopup>*/}
+          <ModalPopup
+            show={reservationResultId != null}
+            onClickDim={(): void => setReservationResultId(null)}
+          >
+            <ReservationResult
+              onClose={(): void => setReservationResultId(null)}
+            />
+          </ModalPopup>
         </>
       )}
     </Content>

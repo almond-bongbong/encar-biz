@@ -2,19 +2,21 @@ import React, { ChangeEvent, useEffect, useState } from 'react';
 import styled, { css, SimpleInterpolation } from 'styled-components';
 import { blue, clearfix, hidden } from 'style/mixin';
 import _ from 'lodash';
-import Button from 'components/Button';
+import toast from 'react-simple-toasts';
+import { Button, Input } from 'components/common';
 import { MEETING_ROOMS } from 'constants/meetingRoom';
 import moment from 'moment';
 import { roundMinutes } from 'lib/datetime';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 import { Meeting } from 'types';
+import { saveReservation } from 'api/reservation';
 
 interface RoomDetailProps {
   roomId: number;
   selectedDateTime: string;
   submitLoading: boolean;
-  onClickReservation: () => void;
+  onSaveReservation: (reservationId: number) => void;
   onClose: () => void;
 }
 
@@ -47,7 +49,6 @@ const RoomInfo = styled.div`
 
 const Photo = styled.img`
   display: block;
-  float: left;
   width: 400px;
   box-shadow: 2px 2px 4px 3px rgba(0, 0, 0, 0.2);
 `;
@@ -121,18 +122,36 @@ const Time = styled.label<TimeProps>`
 `;
 
 const Tags = styled.ul`
-  margin-top: 10px;
+  margin-top: 15px;
   font-size: 0;
   text-align: left;
 `;
 
 const Tag = styled.li`
   display: inline-block;
-  font-size: 13px;
+  font-size: 15px;
   vertical-align: middle;
 
   & + & {
     margin-left: 10px;
+  }
+`;
+
+const Form = styled.form`
+  margin-top: 15px;
+`;
+
+const FormField = styled.div`
+  text-align: left;
+
+  & + & {
+    margin-top: 10px;
+  }
+
+  & > label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 16px;
   }
 `;
 
@@ -147,8 +166,7 @@ const ReservationArea = styled.div`
 const RoomDetail: React.FC<RoomDetailProps> = ({
   roomId,
   selectedDateTime,
-  submitLoading,
-  onClickReservation,
+  onSaveReservation,
   onClose,
 }) => {
   const reservations = useSelector(
@@ -156,6 +174,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
   );
   const roomData = MEETING_ROOMS.find(r => r.id === roomId);
   const [times, setTimes] = useState<Time[]>([]);
+  const [submitLoading, setSubmitLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const initTimes: Time[] = _.range(9, 18.5, 0.5).map((hour, index) => {
@@ -209,6 +228,20 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
     );
   };
 
+  const handleSubmit = async (): Promise<void> => {
+    try {
+      setSubmitLoading(true);
+      const savedId = await saveReservation();
+      toast('예약되었습니다.');
+      onSaveReservation(savedId);
+    } catch (e) {
+      toast('저장 과정에서 문제가 발생했습니다.');
+      console.error(e);
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
   return (
     <Container>
       {roomData && (
@@ -229,6 +262,12 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                   ))}
                 </Tags>
               )}
+              <Form>
+                <FormField>
+                  <label htmlFor={'title'}>회의명</label>
+                  <Input id={'title'} value={''} onChange={(): void => {}} />
+                </FormField>
+              </Form>
             </RoomInfo>
             <Schedule>
               <SelectedDate>
@@ -248,6 +287,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                       <input
                         type={'checkbox'}
                         value={id}
+                        size={30}
                         checked={active}
                         disabled={isReserved}
                         onChange={toggleSelectTime}
@@ -270,7 +310,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
               color={'blue'}
               height={50}
               loading={submitLoading}
-              onClick={onClickReservation}
+              onClick={handleSubmit}
             >
               예약하기
             </Button>

@@ -19,7 +19,6 @@ export default createGlobalStyle`
     color: inherit;
     text-decoration: none;
   }
-  input,
   button {
     padding: 0;
     border: 0;

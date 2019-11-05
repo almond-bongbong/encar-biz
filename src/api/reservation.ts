@@ -8,4 +8,9 @@ export const getReservations = (): Promise<Meeting[]> =>
     }, 500);
   });
 
-// export const getReservations = (): Meeting[] => RESERVATIONS;
+export const saveReservation = (): Promise<number> =>
+  new Promise<number>((resolve): void => {
+    setTimeout(() => {
+      resolve(1);
+    }, 1000);
+  });

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import styled, { css, SimpleInterpolation } from 'styled-components';
-import Loader from '../Loader';
+import { Loader } from 'components/common';
 
 interface ButtonProps {
   inline?: boolean;
@@ -27,6 +27,7 @@ const ButtonWrapper = styled.div<ButtonWrapperProps>`
     css`
       display: inline-block;
       width: auto;
+      vertical-align: middle;
     `};
 
   button,
