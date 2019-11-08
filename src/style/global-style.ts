@@ -12,7 +12,7 @@ export default createGlobalStyle`
   }
   body {
     font-family: ${({ theme }): string => theme.primaryFont};
-    color: #333;
+    color: #eee;
     line-height: 1.5;
   }
   a {
@@ -24,6 +24,7 @@ export default createGlobalStyle`
     border: 0;
     background-color: transparent;
     cursor: pointer;
+    color: inherit;
     font-family: ${({ theme }): string => theme.primaryFont};
     -webkit-tap-highlight-color:  rgba(255, 255, 255, 0); 
     &:focus,

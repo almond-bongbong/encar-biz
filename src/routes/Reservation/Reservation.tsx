@@ -30,11 +30,49 @@ import { ModalPopup, Loader } from 'components/common';
 import RoomDetail from 'components/RoomDetail';
 import FloorSlider from 'components/FloorSlider';
 import { useChangeFloor } from 'hooks/reservation';
+import bg18 from 'resources/images/main/bg-18.jpg';
+import bg19 from 'resources/images/main/bg-19.jpg';
 import ReservationResult from '../ReservationResult';
 
 type SelectedFloor = string | number;
 
-const Content = styled.div``;
+interface BackgroundProps {
+  currentFloor: number;
+}
+
+const Container = styled.div``;
+
+const Content = styled.div`
+  position: relative;
+  width: 1200px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 40px 20px;
+`;
+
+const Background = styled.div<BackgroundProps>`
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: url(${({ currentFloor }): string =>
+    currentFloor === 18 ? bg18 : bg19});
+  background-repeat: no-repeat;
+  background-size: cover;
+  transition: all 0.4s;
+
+  &:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.85);
+  }
+`;
 
 const LoaderWrapper = styled.div`
   position: fixed;
@@ -56,13 +94,19 @@ const DatePickerWrapper = styled.div`
   display: block;
   vertical-align: middle;
 
+  & .SingleDatePickerInput {
+    background: transparent;
+  }
+
   & .DateInput {
     width: 140px;
+    background: transparent;
   }
 
   & .DateInput_input {
     padding-left: 0;
-    color: #444;
+    background: transparent;
+    color: #eee;
     font-weight: 400;
     font-size: 22px;
     font-family: inherit;
@@ -291,101 +335,105 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   };
 
   return (
-    <Content>
+    <Container>
       {loading[FETCH_RESERVATIONS_REQUEST] ? (
         <LoaderWrapper>
           <Loader color={'blue'} size={80} />
         </LoaderWrapper>
       ) : (
         <>
-          <TabWrapper
-            value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
-            onClick={handleFloor}
-            items={[
-              { value: '18', label: '18F.' },
-              { value: '19', label: '19F.' },
-            ]}
-          />
+          <Background currentFloor={currentFloor} />
 
-          <RecommendArea>
-            <DatePickerWrapper>
-              <SingleDatePicker
-                id={'datepicker'}
-                date={selectedDateTimeMoment}
-                onDateChange={handleDate}
-                focused={showCalendar}
-                onFocusChange={({ focused }): void =>
-                  setShowCalendar(!!focused)
-                }
-                hideKeyboardShortcutsPanel={true}
-                monthFormat={'YYYY MMMM'}
-                displayFormat={'YYYY.MM.DD'}
-                numberOfMonths={1}
-                noBorder={true}
-                readOnly
-              />
-            </DatePickerWrapper>
+          <Content>
+            <TabWrapper
+              value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
+              onClick={handleFloor}
+              items={[
+                { value: '18', label: '18F.' },
+                { value: '19', label: '19F.' },
+              ]}
+            />
 
-            <TimeButton
-              type={'button'}
-              onFocus={(): void => setShowTimeSelect(true)}
-              onBlur={(): void => setShowTimeSelect(false)}
-            >
-              {selectedDateTimeInterval && <Now>지금</Now>}
-              {selectedDateTimeMoment.format(`A h시 m분`)}
-              {selectedDateTimeInterval && (
-                <Second>{`${moment().format('ss')}초`}</Second>
+            <RecommendArea>
+              <DatePickerWrapper>
+                <SingleDatePicker
+                  id={'datepicker'}
+                  date={selectedDateTimeMoment}
+                  onDateChange={handleDate}
+                  focused={showCalendar}
+                  onFocusChange={({ focused }): void =>
+                    setShowCalendar(!!focused)
+                  }
+                  hideKeyboardShortcutsPanel={true}
+                  monthFormat={'YYYY MMMM'}
+                  displayFormat={'YYYY.MM.DD'}
+                  numberOfMonths={1}
+                  noBorder={true}
+                  readOnly
+                />
+              </DatePickerWrapper>
+
+              <TimeButton
+                type={'button'}
+                onFocus={(): void => setShowTimeSelect(true)}
+                onBlur={(): void => setShowTimeSelect(false)}
+              >
+                {selectedDateTimeInterval && <Now>지금</Now>}
+                {selectedDateTimeMoment.format(`A h시 m분`)}
+                {selectedDateTimeInterval && (
+                  <Second>{`${moment().format('ss')}초`}</Second>
+                )}
+              </TimeButton>
+
+              {recommendRoom && (
+                <Recommend>
+                  <em>{recommendRoom.name}</em> 어때?
+                </Recommend>
               )}
-            </TimeButton>
 
-            {recommendRoom && (
-              <Recommend>
-                <em>{recommendRoom.name}</em> 어때?
-              </Recommend>
-            )}
+              {showTimeSelect && (
+                <TimeSelectContainer>
+                  <TimeSelect onSelectTime={handleTime} />
+                </TimeSelectContainer>
+              )}
+            </RecommendArea>
 
-            {showTimeSelect && (
-              <TimeSelectContainer>
-                <TimeSelect onSelectTime={handleTime} />
-              </TimeSelectContainer>
-            )}
-          </RecommendArea>
-
-          <FloorSliderWrapper>
-            <FloorSlider
-              sliderRef={slider}
-              sliderIndex={sliderIndex}
-              onChangeFloor={handleFloor}
-              onClickRoom={handleClickRoom}
-            />
-          </FloorSliderWrapper>
-
-          <ModalPopup
-            show={detailRoomId != null}
-            onClickDim={(): void => setDetailRoomId(null)}
-          >
-            {detailRoomId != null && (
-              <RoomDetail
-                selectedDateTime={selectedDateTime}
-                roomId={detailRoomId}
-                submitLoading={false}
-                onSaveReservation={handleSaveReservation}
-                onClose={(): void => setDetailRoomId(null)}
+            <FloorSliderWrapper>
+              <FloorSlider
+                sliderRef={slider}
+                sliderIndex={sliderIndex}
+                onChangeFloor={handleFloor}
+                onClickRoom={handleClickRoom}
               />
-            )}
-          </ModalPopup>
+            </FloorSliderWrapper>
 
-          <ModalPopup
-            show={reservationResultId != null}
-            onClickDim={(): void => setReservationResultId(null)}
-          >
-            <ReservationResult
-              onClose={(): void => setReservationResultId(null)}
-            />
-          </ModalPopup>
+            <ModalPopup
+              show={detailRoomId != null}
+              onClickDim={(): void => setDetailRoomId(null)}
+            >
+              {detailRoomId != null && (
+                <RoomDetail
+                  selectedDateTime={selectedDateTime}
+                  roomId={detailRoomId}
+                  submitLoading={false}
+                  onSaveReservation={handleSaveReservation}
+                  onClose={(): void => setDetailRoomId(null)}
+                />
+              )}
+            </ModalPopup>
+
+            <ModalPopup
+              show={reservationResultId != null}
+              onClickDim={(): void => setReservationResultId(null)}
+            >
+              <ReservationResult
+                onClose={(): void => setReservationResultId(null)}
+              />
+            </ModalPopup>
+          </Content>
         </>
       )}
-    </Content>
+    </Container>
   );
 };
 

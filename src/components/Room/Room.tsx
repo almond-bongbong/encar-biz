@@ -31,7 +31,7 @@ const Container = styled.div<ContainerProps>`
 
 const Title = styled.div<TitleProps>`
   padding: 0 5px;
-  color: ${({ inUse }): string => (inUse ? '#666' : '#333')};
+  color: ${({ inUse }): string => (inUse ? '#aaa' : '#eee')};
   font-size: 22px;
 `;
 

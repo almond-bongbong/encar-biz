@@ -12,7 +12,7 @@ const ArrowRight: React.FC<ArrowRightProps> = ({ className }) => (
     height="50"
     viewBox="0 0 24 24"
   >
-    <path d="M24 12l-12-8v5h-12v6h12v5z" />
+    <path d="M24 12l-12-8v5h-12v6h12v5z" fill="#eee" />
   </svg>
 );
 

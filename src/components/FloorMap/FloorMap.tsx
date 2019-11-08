@@ -94,7 +94,6 @@ const FloorMap: React.FC<FloorProps> = ({
   });
 
   const handleClickRoom = (id: number): void => {
-    console.log('click room');
     if (!isSwiping) {
       onClickRoom(id);
     }
