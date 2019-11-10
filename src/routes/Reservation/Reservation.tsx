@@ -51,7 +51,7 @@ const Content = styled.div`
 `;
 
 const Background = styled.div<BackgroundProps>`
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
@@ -79,15 +79,6 @@ const LoaderWrapper = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-`;
-
-const TimeSelectContainer = styled.div`
-  position: absolute;
-  top: 100px;
-  left: 0;
-  z-index: 100;
-  background-color: #fff;
-  box-shadow: 0 2px 4px 5px rgba(100, 100, 100, 0.1);
 `;
 
 const DatePickerWrapper = styled.div`
@@ -132,21 +123,6 @@ const Recommend = styled.p`
   }
 `;
 
-const TimeButton = styled.button`
-  display: inline-block;
-  font-size: 40px;
-`;
-
-const Now = styled.span`
-  margin-right: 10px;
-  font-size: 30px;
-`;
-
-const Second = styled.span`
-  margin-left: 10px;
-  font-size: 22px;
-`;
-
 const TabWrapper = styled(FloorTab)`
   position: absolute;
   top: 50px;
@@ -161,11 +137,11 @@ const TabWrapper = styled(FloorTab)`
 `;
 
 const FloorSliderWrapper = styled.div`
+  position: relative;
   margin-top: 30px;
 `;
 
 const Reservation: React.FC<RouteComponentProps> = () => {
-  const [showTimeSelect, setShowTimeSelect] = useState<boolean>(false);
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const { reservations, selectedDateTime, recommendRoom } = useSelector(
     (state: RootState) => state.reservation,
@@ -305,12 +281,12 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   const handleTime = (selectedTime: string): void => {
     const [hour, minutes] = selectedTime.split(':');
     const newDateTime = selectedDateTimeMoment
+      .clone()
       .set('hours', parseInt(hour, 10))
       .set('minutes', parseInt(minutes, 10))
       .format(DATETIME_FORMAT);
 
     dispatch(selectDateTime(newDateTime));
-    setShowTimeSelect(false);
   };
 
   const handleDate = (selectedDate: Moment | null): void => {
@@ -373,32 +349,20 @@ const Reservation: React.FC<RouteComponentProps> = () => {
                 />
               </DatePickerWrapper>
 
-              <TimeButton
-                type={'button'}
-                onFocus={(): void => setShowTimeSelect(true)}
-                onBlur={(): void => setShowTimeSelect(false)}
-              >
-                {selectedDateTimeInterval && <Now>지금</Now>}
-                {selectedDateTimeMoment.format(`A h시 m분`)}
-                {selectedDateTimeInterval && (
-                  <Second>{`${moment().format('ss')}초`}</Second>
-                )}
-              </TimeButton>
+              <TimeSelect
+                value={selectedDateTimeMoment}
+                timerActivated={!!selectedDateTimeInterval}
+                onSelectTime={handleTime}
+              />
 
               {recommendRoom && (
                 <Recommend>
                   <em>{recommendRoom.name}</em> 어때?
                 </Recommend>
               )}
-
-              {showTimeSelect && (
-                <TimeSelectContainer>
-                  <TimeSelect onSelectTime={handleTime} />
-                </TimeSelectContainer>
-              )}
             </RecommendArea>
 
-            <FloorSliderWrapper>
+            <FloorSliderWrapper tabIndex={0}>
               <FloorSlider
                 sliderRef={slider}
                 sliderIndex={sliderIndex}

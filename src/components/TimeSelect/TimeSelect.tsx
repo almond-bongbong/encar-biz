@@ -1,25 +1,59 @@
-import React from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
 import _ from 'lodash';
 import CustomScroll from 'react-custom-scroll';
 import 'react-custom-scroll/dist/customScroll.css';
 import isMobileDetector from 'lib/isMobileDetector';
+import moment, { Moment } from 'moment';
+import { addRootElement } from '../../lib/generateElement';
 
 interface TimeSelectProps {
+  value: Moment;
+  timerActivated: boolean;
   onSelectTime: (time: string) => void;
+}
+
+interface OptionsProps {
+  top: number;
+  left: number;
 }
 
 interface TimeProps {
   isMobile: boolean;
 }
 
-const Container = styled.div`
+const Container = styled.div``;
+
+const TimeButton = styled.button`
+  display: inline-block;
+  font-size: 40px;
+`;
+
+const Now = styled.span`
+  margin-right: 10px;
+  font-size: 30px;
+`;
+
+const Second = styled.span`
+  margin-left: 10px;
+  font-size: 22px;
+`;
+
+const Options = styled.div<OptionsProps>`
+  position: fixed;
+  top: ${({ top }): number => top}px;
+  left: ${({ left }): number => left}px;
+  z-index: 100;
+  background-color: rgba(170, 170, 170, 0.7);
+  box-shadow: 0 2px 4px 5px rgba(100, 100, 100, 0.1);
+
   & .rcs-custom-scroll .rcs-inner-handle {
     background-color: rgba(30, 30, 30, 0.6);
   }
 `;
 
-const Content = styled.div`
+const OptionsContent = styled.div`
   width: 200px;
   height: 300px;
 `;
@@ -49,28 +83,85 @@ const Time = styled.button<TimeProps>`
 
 const isMobile = isMobileDetector();
 
-const TimeSelect: React.FC<TimeSelectProps> = ({ onSelectTime }) => {
+addRootElement('time-select-container');
+
+const TimeSelect: React.FC<TimeSelectProps> = ({
+  value,
+  timerActivated,
+  onSelectTime,
+}) => {
+  const containerElement = document.getElementById('time-select-container');
+  const [optionsPosition, setOptionsPosition] = useState<number[] | null>(null);
+
+  const showTimeOptions = (e: SyntheticEvent<HTMLButtonElement>): void => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const top = rect.top + rect.height;
+    setOptionsPosition([top, rect.left]);
+  };
+
+  const hideTimeOptions = (): void => {
+    console.log('hide');
+    setOptionsPosition(null);
+  };
+
+  const toggleShowOptions = (e: SyntheticEvent<HTMLButtonElement>): void => {
+    if (optionsPosition) {
+      console.log('toggle hide');
+      hideTimeOptions();
+    } else {
+      console.log('toggle show');
+      showTimeOptions(e);
+    }
+  };
+
+  useEffect(() => {
+    if (optionsPosition) {
+      window.addEventListener('click', hideTimeOptions, true);
+    }
+
+    return (): void => {
+      window.removeEventListener('click', hideTimeOptions, true);
+    };
+  }, [optionsPosition]);
+
   return (
     <Container>
-      <CustomScroll>
-        <Content>
-          {_.range(9, 18.5, 0.5).map(index => {
-            const hour = Math.floor(index);
-            const minutes = (index % 1) * 60;
-            const time = `${hour}:${minutes.toString().padStart(2, '0')}`;
+      <TimeButton
+        type={'button'}
+        onClick={toggleShowOptions}
+        // onBlur={hideTimeOptions}
+      >
+        {timerActivated && <Now>지금</Now>}
+        {value.format(`A h시 m분`)}
+        {timerActivated && <Second>{`${moment().format('ss')}초`}</Second>}
+      </TimeButton>
 
-            return (
-              <Time
-                key={index}
-                onMouseDown={(): void => onSelectTime(time)}
-                isMobile={isMobile}
-              >
-                {time}
-              </Time>
-            );
-          })}
-        </Content>
-      </CustomScroll>
+      {containerElement &&
+        optionsPosition &&
+        createPortal(
+          <Options top={optionsPosition[0]} left={optionsPosition[1]}>
+            <CustomScroll>
+              <OptionsContent>
+                {_.range(9, 18.5, 0.5).map(index => {
+                  const hour = Math.floor(index);
+                  const minutes = (index % 1) * 60;
+                  const time = `${hour}:${minutes.toString().padStart(2, '0')}`;
+
+                  return (
+                    <Time
+                      key={index}
+                      onMouseDown={(): void => onSelectTime(time)}
+                      isMobile={isMobile}
+                    >
+                      {time}
+                    </Time>
+                  );
+                })}
+              </OptionsContent>
+            </CustomScroll>
+          </Options>,
+          containerElement,
+        )}
     </Container>
   );
 };
