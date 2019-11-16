@@ -11,7 +11,7 @@ import FloorTab from 'components/FloorTab';
 import styled from 'styled-components';
 import moment, { Moment } from 'moment';
 import 'moment/locale/ko';
-import { CANTEEN, MEETING_ROOMS } from 'constants/meetingRoom';
+import { MEETING_ROOMS } from 'constants/meetingRoom';
 import Slider from 'react-slick';
 import TimeSelect from 'components/TimeSelect';
 import { useDispatch, useSelector } from 'react-redux';
@@ -21,18 +21,19 @@ import {
   fetchReservations,
   minus30Minutes,
   selectDateTime,
-  setRecommendRoom,
+  setRecommendRoomId,
+  setSelectedRoomId,
 } from 'store/reservation';
 import { DATETIME_FORMAT, Meeting, Room } from 'types';
 import { RootState } from 'store';
 import { SingleDatePicker } from 'react-dates';
-import { ModalPopup, Loader } from 'components/common';
+import { SidePanel, Loader } from 'components/common';
 import RoomDetail from 'components/RoomDetail';
 import FloorSlider from 'components/FloorSlider';
 import { useChangeFloor } from 'hooks/reservation';
 import bg18 from 'resources/images/main/bg-18.jpg';
 import bg19 from 'resources/images/main/bg-19.jpg';
-import ReservationResult from '../ReservationResult';
+import useIsUseRoom from 'hooks/reservation/useIsUseRoom';
 
 type SelectedFloor = string | number;
 
@@ -51,7 +52,7 @@ const Content = styled.div`
 `;
 
 const Background = styled.div<BackgroundProps>`
-  position: fixed;
+  position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
@@ -70,7 +71,7 @@ const Background = styled.div<BackgroundProps>`
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(0, 0, 0, 0.75);
   }
 `;
 
@@ -117,7 +118,7 @@ const Recommend = styled.p`
   font-size: 28px;
 
   em {
-    margin-right: 5px;
+    margin-right: 10px;
     font-size: 40px;
     text-decoration: underline;
   }
@@ -143,9 +144,17 @@ const FloorSliderWrapper = styled.div`
 
 const Reservation: React.FC<RouteComponentProps> = () => {
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
-  const { reservations, selectedDateTime, recommendRoom } = useSelector(
-    (state: RootState) => state.reservation,
-  );
+  const {
+    reservations,
+    selectedDateTime,
+    recommendRoomId,
+    selectedRoomId,
+  } = useSelector((state: RootState) => state.reservation);
+  const recommendRoom = MEETING_ROOMS.find(r => r.id === recommendRoomId) || {
+    name: '캔틴',
+  };
+  const selectedRoom = MEETING_ROOMS.find(r => r.id === selectedRoomId);
+  const isUseSelectedRoom = useIsUseRoom(selectedRoomId || -1);
   const loading = useSelector((state: RootState) => state.loading);
   const selectedDateTimeMoment = useMemo(() => moment(selectedDateTime), [
     selectedDateTime,
@@ -156,10 +165,6 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   const sliderIndex = currentFloor === 18 ? 1 : 0;
   const slider = useRef<Slider>(null);
   const dispatch = useDispatch();
-  const [detailRoomId, setDetailRoomId] = useState<number | null>(null);
-  const [reservationResultId, setReservationResultId] = useState<number | null>(
-    null,
-  );
   const [selectedDateTimeInterval, setSelectedDateTimeInterval] = useState<
     number | null
   >(null);
@@ -175,17 +180,33 @@ const Reservation: React.FC<RouteComponentProps> = () => {
 
   const handleKeyPress = useCallback(
     (e: KeyboardEvent) => {
-      if (e.code === 'ArrowUp') {
+      if (slider.current) {
+        if (e.code === 'ArrowUp') {
+          slider.current.slickPrev();
+        }
+        if (e.code === 'ArrowDown') {
+          slider.current.slickNext();
+        }
+      }
+      if (e.code === 'ArrowRight') {
         dispatch(add30Minutes());
         e.preventDefault();
       }
-      if (e.code === 'ArrowDown') {
+      if (e.code === 'ArrowLeft') {
         dispatch(minus30Minutes());
         e.preventDefault();
       }
     },
     [dispatch],
   );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyPress);
+
+    return (): void => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [handleKeyPress]);
 
   const startInterval = useCallback((): void => {
     setSelectedDateTimeInterval(
@@ -206,10 +227,11 @@ const Reservation: React.FC<RouteComponentProps> = () => {
     }
     setEventLivingTimer(
       setTimeout(() => {
+        dispatch(setSelectedRoomId(null));
         startInterval();
       }, 60 * 1000),
     );
-  }, [startInterval, eventLivingTimer, selectedDateTimeInterval]);
+  }, [dispatch, startInterval, eventLivingTimer, selectedDateTimeInterval]);
 
   useEffect(() => {
     if (reservations.length > 0) {
@@ -227,18 +249,18 @@ const Reservation: React.FC<RouteComponentProps> = () => {
       );
 
       if (
-        !recommendRoom ||
-        !unUsedRoomsOnFloor.find(room => room.id === recommendRoom.id)
+        !recommendRoomId ||
+        !unUsedRoomsOnFloor.find(room => room.id === recommendRoomId)
       ) {
         const randomIndex = Math.floor(
           Math.random() * unUsedRoomsOnFloor.length,
         );
-        dispatch(setRecommendRoom(unUsedRoomsOnFloor[randomIndex] || CANTEEN));
+        dispatch(setRecommendRoomId(unUsedRoomsOnFloor[randomIndex].id || -1));
       }
     }
   }, [
     currentFloor,
-    recommendRoom,
+    recommendRoomId,
     reservations,
     selectedDateTimeMoment,
     dispatch,
@@ -263,14 +285,6 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   useEffect(() => {
     dispatch(fetchReservations.request());
   }, [dispatch]);
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress);
-
-    return (): void => {
-      window.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [handleKeyPress]);
 
   useEffect(() => {
     if (slider.current) {
@@ -302,13 +316,12 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   };
 
   const handleClickRoom = (roomId: number): void => {
-    setDetailRoomId(roomId);
+    dispatch(setSelectedRoomId(roomId));
   };
 
-  const handleSaveReservation = (reservationId: number): void => {
-    setDetailRoomId(null);
-    setReservationResultId(reservationId);
-  };
+  // const handleSaveReservation = (reservationId: number): void => {
+  //   setReservationResultId(reservationId);
+  // };
 
   return (
     <Container>
@@ -355,9 +368,15 @@ const Reservation: React.FC<RouteComponentProps> = () => {
                 onSelectTime={handleTime}
               />
 
-              {recommendRoom && (
+              {selectedRoom && (
                 <Recommend>
-                  <em>{recommendRoom.name}</em> 어때?
+                  <em>{selectedRoom.name}</em>
+                  {isUseSelectedRoom ? '사용중 🙅‍♂️️' : '예약가능 🙆‍♀️️'}
+                </Recommend>
+              )}
+              {!selectedRoom && recommendRoom && (
+                <Recommend>
+                  <em>{recommendRoom.name}</em>어때?
                 </Recommend>
               )}
             </RecommendArea>
@@ -371,29 +390,19 @@ const Reservation: React.FC<RouteComponentProps> = () => {
               />
             </FloorSliderWrapper>
 
-            <ModalPopup
-              show={detailRoomId != null}
-              onClickDim={(): void => setDetailRoomId(null)}
+            <SidePanel
+              show={selectedRoomId != null}
+              closeHandler={(): void => {
+                dispatch(setSelectedRoomId(null));
+              }}
             >
-              {detailRoomId != null && (
+              {selectedRoomId && (
                 <RoomDetail
                   selectedDateTime={selectedDateTime}
-                  roomId={detailRoomId}
-                  submitLoading={false}
-                  onSaveReservation={handleSaveReservation}
-                  onClose={(): void => setDetailRoomId(null)}
+                  roomId={selectedRoomId}
                 />
               )}
-            </ModalPopup>
-
-            <ModalPopup
-              show={reservationResultId != null}
-              onClickDim={(): void => setReservationResultId(null)}
-            >
-              <ReservationResult
-                onClose={(): void => setReservationResultId(null)}
-              />
-            </ModalPopup>
+            </SidePanel>
           </Content>
         </>
       )}

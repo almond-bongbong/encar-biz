@@ -85,9 +85,10 @@ const FloorMap: React.FC<FloorProps> = ({
 }) => {
   const mapName = `image-map${floor}`;
   const changeFloor = useChangeFloor();
-  const { reservations, recommendRoom } = useSelector(
+  const { reservations, selectedRoomId } = useSelector(
     (state: RootState) => state.reservation,
   );
+  const selectedRoom = rooms.find(r => r.id === selectedRoomId);
 
   useEffect(() => {
     ResponsiveImageMap('img[usemap]');
@@ -132,14 +133,12 @@ const FloorMap: React.FC<FloorProps> = ({
           />
         ))}
 
-        {recommendRoom && recommendRoom.floor === floor && (
-          <Marker
-            x={recommendRoom.x}
-            y={recommendRoom.y}
-            src={redArrowDown}
-            alt={`${recommendRoom.name} 회의실 추천`}
-          />
-        )}
+        <Marker
+          x={selectedRoom ? selectedRoom.x : -9999}
+          y={selectedRoom ? selectedRoom.y : -9999}
+          src={redArrowDown}
+          alt={`선택된 회의실`}
+        />
 
         {floor === 18 && (
           <StairOn18 direction={'up'} onClick={(): void => handleFloor(19)} />

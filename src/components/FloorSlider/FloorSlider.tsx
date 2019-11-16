@@ -23,7 +23,8 @@ const FloorSlider: React.FC<FloorSliderProps> = ({
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
   const sliderSettings = useMemo<Settings>(
     () => ({
-      speed: 400,
+      accessibility: false,
+      speed: 700,
       arrows: false,
       vertical: true,
       verticalSwiping: true,

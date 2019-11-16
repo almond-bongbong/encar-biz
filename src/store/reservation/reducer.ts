@@ -4,7 +4,8 @@ import {
   FETCH_RESERVATIONS_SUCCESS,
   MINUS_30_MINUTES,
   SELECT_DATETIME,
-  SET_RECOMMEND_ROOM,
+  SET_RECOMMEND_ROOM_ID,
+  SET_SELECTED_ROOM_ID,
 } from './actions';
 import { createReducer } from 'typesafe-actions';
 import { DATETIME_FORMAT } from 'types';
@@ -15,7 +16,7 @@ const initialState: ReservationState = {
   selectedDateTime: moment().format(DATETIME_FORMAT),
   selectedRoomId: null,
   reservations: [],
-  recommendRoom: null,
+  recommendRoomId: null,
 };
 
 const reducer = createReducer<ReservationState, ReservationAction>(
@@ -37,9 +38,13 @@ const reducer = createReducer<ReservationState, ReservationAction>(
       ...state,
       selectedDateTime: minus30Minutes(state.selectedDateTime),
     }),
-    [SET_RECOMMEND_ROOM]: (state, action) => ({
+    [SET_RECOMMEND_ROOM_ID]: (state, action) => ({
       ...state,
-      recommendRoom: action.payload,
+      recommendRoomId: action.payload,
+    }),
+    [SET_SELECTED_ROOM_ID]: (state, action) => ({
+      ...state,
+      selectedRoomId: action.payload,
     }),
   },
 );
