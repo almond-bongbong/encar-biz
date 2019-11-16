@@ -25,7 +25,7 @@ const TabWrapper = styled.div`
 const TabButton = styled.button<TabButtonProps>`
   display: inline-block;
   padding: 10px;
-  color: ${(props): string => (props.active ? '#fff' : '#777')};
+  color: ${(props): string => (props.active ? '#fff' : '#787878')};
   font-size: 28px;
   cursor: pointer;
   ${(props): SimpleInterpolation =>
