@@ -24,7 +24,7 @@ interface Time {
 }
 
 const Container = styled.div`
-  padding: 30px;
+  padding: 10px;
 `;
 
 const Title = styled.h2`
@@ -38,7 +38,7 @@ const RoomInfo = styled.div``;
 
 const Photo = styled.img`
   display: block;
-  width: 400px;
+  width: 100%;
   box-shadow: 2px 2px 4px 3px rgba(0, 0, 0, 0.2);
 `;
 
@@ -48,6 +48,7 @@ const Content = styled.div`
 
 const Schedule = styled.div`
   position: relative;
+  margin-top: 10px;
   text-align: left;
 `;
 
@@ -77,6 +78,7 @@ const Time = styled.label<TimeProps>`
   white-space: nowrap;
   max-width: 100%;
   cursor: pointer;
+  color: #fff;
 
   & > input {
     ${hidden}
@@ -84,7 +86,7 @@ const Time = styled.label<TimeProps>`
 
   & .time {
     margin-right: 10px;
-    color: #888;
+    color: #fff;
     font-family: ${({ theme }): string => theme.basicFont};
   }
 
@@ -104,7 +106,7 @@ const Time = styled.label<TimeProps>`
           }
         `
       : css`
-          background-color: #fff;
+          background-color: transparent;
         `};
 `;
 
@@ -143,8 +145,8 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
       const startTime = start.format('HH:mm');
       const endTime = end.format('HH:mm');
       const reservedMeeting = reservations
-        .filter(r => r.roomId === roomId)
-        .find(r => start.isBetween(r.start, r.end, undefined, '[)'));
+        .filter(r => r.room.id === roomId)
+        .find(r => start.isBetween(r.startedAt, r.endedAt, undefined, '[)'));
       const isReserved = !!reservedMeeting;
       const active =
         !isReserved &&
@@ -234,7 +236,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                         className={'time'}
                       >{`${startTime} ~ ${endTime}`}</span>
                       <span className={'name'}>
-                        {reservedMeeting && reservedMeeting.title}
+                        {reservedMeeting && reservedMeeting.name}
                       </span>
                     </Time>
                   ),

@@ -24,7 +24,7 @@ import {
   setRecommendRoomId,
   setSelectedRoomId,
 } from 'store/reservation';
-import { DATETIME_FORMAT, Meeting, Room } from 'types';
+import { DATE_FORMAT, DATETIME_FORMAT, Meeting, Room } from 'types';
 import { RootState } from 'store';
 import { SingleDatePicker } from 'react-dates';
 import { SidePanel, Loader } from 'components/common';
@@ -45,7 +45,7 @@ const Container = styled.div``;
 
 const Content = styled.div`
   position: relative;
-  width: 1200px;
+  width: 1600px;
   max-width: 100%;
   margin: 0 auto;
   padding: 40px 20px;
@@ -71,7 +71,7 @@ const Background = styled.div<BackgroundProps>`
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.6);
   }
 `;
 
@@ -238,8 +238,13 @@ const Reservation: React.FC<RouteComponentProps> = () => {
       const inUsedRooms = MEETING_ROOMS.filter((room: Room) =>
         reservations.some(
           (r: Meeting) =>
-            room.id === r.roomId &&
-            selectedDateTimeMoment.isBetween(r.start, r.end, undefined, '[]'),
+            room.id === r.room.id &&
+            selectedDateTimeMoment.isBetween(
+              r.startedAt,
+              r.endedAt,
+              undefined,
+              '[]',
+            ),
         ),
       );
       const unUsedRoomsOnFloor = MEETING_ROOMS.filter(
@@ -283,8 +288,10 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   }, [startInterval]);
 
   useEffect(() => {
-    dispatch(fetchReservations.request());
-  }, [dispatch]);
+    dispatch(
+      fetchReservations.request(selectedDateTimeMoment.format(DATE_FORMAT)),
+    );
+  }, [dispatch, selectedDateTimeMoment]);
 
   useEffect(() => {
     if (slider.current) {
@@ -325,86 +332,85 @@ const Reservation: React.FC<RouteComponentProps> = () => {
 
   return (
     <Container>
-      {loading[FETCH_RESERVATIONS_REQUEST] ? (
+      <>
+        <Background currentFloor={currentFloor} />
+
+        <Content>
+          <TabWrapper
+            value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
+            onClick={handleFloor}
+            items={[
+              { value: '18', label: '18F.' },
+              { value: '19', label: '19F.' },
+            ]}
+          />
+
+          <RecommendArea>
+            <DatePickerWrapper>
+              <SingleDatePicker
+                id={'datepicker'}
+                date={selectedDateTimeMoment}
+                onDateChange={handleDate}
+                focused={showCalendar}
+                onFocusChange={({ focused }): void =>
+                  setShowCalendar(!!focused)
+                }
+                hideKeyboardShortcutsPanel={true}
+                monthFormat={'YYYY MMMM'}
+                displayFormat={'YYYY.MM.DD'}
+                numberOfMonths={1}
+                noBorder={true}
+                readOnly
+              />
+            </DatePickerWrapper>
+
+            <TimeSelect
+              value={selectedDateTimeMoment}
+              timerActivated={!!selectedDateTimeInterval}
+              onSelectTime={handleTime}
+            />
+
+            {selectedRoom && (
+              <Recommend>
+                <em>{selectedRoom.name}</em>
+                {isUseSelectedRoom ? '사용중 🙅‍♂️️' : '예약가능 🙆‍♀️️'}
+              </Recommend>
+            )}
+            {!selectedRoom && recommendRoom && (
+              <Recommend>
+                <em>{recommendRoom.name}</em>어때?
+              </Recommend>
+            )}
+          </RecommendArea>
+
+          <FloorSliderWrapper tabIndex={0}>
+            <FloorSlider
+              sliderRef={slider}
+              sliderIndex={sliderIndex}
+              onChangeFloor={handleFloor}
+              onClickRoom={handleClickRoom}
+            />
+          </FloorSliderWrapper>
+
+          <SidePanel
+            show={selectedRoomId != null}
+            closeHandler={(): void => {
+              dispatch(setSelectedRoomId(null));
+            }}
+          >
+            {selectedRoomId && (
+              <RoomDetail
+                selectedDateTime={selectedDateTime}
+                roomId={selectedRoomId}
+              />
+            )}
+          </SidePanel>
+        </Content>
+      </>
+      {loading[FETCH_RESERVATIONS_REQUEST] && (
         <LoaderWrapper>
           <Loader color={'blue'} size={80} />
         </LoaderWrapper>
-      ) : (
-        <>
-          <Background currentFloor={currentFloor} />
-
-          <Content>
-            <TabWrapper
-              value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
-              onClick={handleFloor}
-              items={[
-                { value: '18', label: '18F.' },
-                { value: '19', label: '19F.' },
-              ]}
-            />
-
-            <RecommendArea>
-              <DatePickerWrapper>
-                <SingleDatePicker
-                  id={'datepicker'}
-                  date={selectedDateTimeMoment}
-                  onDateChange={handleDate}
-                  focused={showCalendar}
-                  onFocusChange={({ focused }): void =>
-                    setShowCalendar(!!focused)
-                  }
-                  hideKeyboardShortcutsPanel={true}
-                  monthFormat={'YYYY MMMM'}
-                  displayFormat={'YYYY.MM.DD'}
-                  numberOfMonths={1}
-                  noBorder={true}
-                  readOnly
-                />
-              </DatePickerWrapper>
-
-              <TimeSelect
-                value={selectedDateTimeMoment}
-                timerActivated={!!selectedDateTimeInterval}
-                onSelectTime={handleTime}
-              />
-
-              {selectedRoom && (
-                <Recommend>
-                  <em>{selectedRoom.name}</em>
-                  {isUseSelectedRoom ? '사용중 🙅‍♂️️' : '예약가능 🙆‍♀️️'}
-                </Recommend>
-              )}
-              {!selectedRoom && recommendRoom && (
-                <Recommend>
-                  <em>{recommendRoom.name}</em>어때?
-                </Recommend>
-              )}
-            </RecommendArea>
-
-            <FloorSliderWrapper tabIndex={0}>
-              <FloorSlider
-                sliderRef={slider}
-                sliderIndex={sliderIndex}
-                onChangeFloor={handleFloor}
-                onClickRoom={handleClickRoom}
-              />
-            </FloorSliderWrapper>
-
-            <SidePanel
-              show={selectedRoomId != null}
-              closeHandler={(): void => {
-                dispatch(setSelectedRoomId(null));
-              }}
-            >
-              {selectedRoomId && (
-                <RoomDetail
-                  selectedDateTime={selectedDateTime}
-                  roomId={selectedRoomId}
-                />
-              )}
-            </SidePanel>
-          </Content>
-        </>
       )}
     </Container>
   );

@@ -129,7 +129,7 @@ const FloorMap: React.FC<FloorProps> = ({
             name={room.name}
             x={room.x}
             y={room.y}
-            meetings={reservations.filter(r => r.roomId === room.id)}
+            meetings={reservations.filter(r => r.room.id === room.id)}
           />
         ))}
 

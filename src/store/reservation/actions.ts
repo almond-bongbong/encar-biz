@@ -17,7 +17,7 @@ export const fetchReservations = createAsyncAction(
   FETCH_RESERVATIONS_REQUEST,
   FETCH_RESERVATIONS_SUCCESS,
   FETCH_RESERVATIONS_FAILURE,
-)<void, Meeting[], Error>();
+)<string, Meeting[], Error>();
 export const selectDateTime = createStandardAction(SELECT_DATETIME)<string>();
 export const add30Minutes = createStandardAction(ADD_30_MINUTES)();
 export const minus30Minutes = createStandardAction(MINUS_30_MINUTES)();

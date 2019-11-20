@@ -1,5 +1,5 @@
 import {
-  add30Minutes,
+  add30Minutes, FETCH_RESERVATIONS_REQUEST,
   fetchReservations,
   minus30Minutes,
   selectDateTime,
@@ -25,4 +25,9 @@ export interface ReservationState {
   selectedRoomId: number | null;
   reservations: Meeting[];
   recommendRoomId: number | null;
+}
+
+export interface FetchReservationsAction {
+  type: typeof FETCH_RESERVATIONS_REQUEST;
+  payload: string;
 }

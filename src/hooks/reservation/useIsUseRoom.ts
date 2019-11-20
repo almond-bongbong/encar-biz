@@ -11,12 +11,17 @@ function useIsUseRoom(roomId: number): Room | null | undefined {
 
   const reservation = reservations.find(
     (r: Meeting) =>
-      r.roomId === roomId &&
-      moment(selectedDateTime).isBetween(r.start, r.end, undefined, '[]'),
+      r.room.id === roomId &&
+      moment(selectedDateTime).isBetween(
+        r.startedAt,
+        r.endedAt,
+        undefined,
+        '[]',
+      ),
   );
 
   return (
-    reservation && MEETING_ROOMS.find(room => room.id === reservation.roomId)
+    reservation && MEETING_ROOMS.find(room => room.id === reservation.room.id)
   );
 }
 

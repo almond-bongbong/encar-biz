@@ -17,7 +17,7 @@ const PanelWrapper = styled.div`
   right: 0;
   bottom: 0;
   z-index: 10000;
-  width: 600px;
+  width: 400px;
   background-color: rgba(40, 43, 53, 0.9);
   &.enter {
     opacity: 0;

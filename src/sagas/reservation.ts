@@ -2,16 +2,20 @@ import { all, call, fork, put, takeLatest } from 'redux-saga/effects';
 import {
   FETCH_RESERVATIONS_REQUEST,
   fetchReservations,
-  ReservationAction,
+  FetchReservationsAction,
 } from 'store/reservation';
 import * as reservationApi from 'api/reservation';
 import { loadingEnd, loadingStart } from 'store/loading';
 
-function* getReservations(action: ReservationAction): Generator {
+function* getReservations(action: FetchReservationsAction): Generator {
   try {
     yield put(loadingStart(action.type));
-    const reservations: any = yield call(reservationApi.getReservations);
-    yield put(fetchReservations.success(reservations));
+    const response: any = yield call(
+      reservationApi.getReservations,
+      action.payload,
+    );
+    console.log(response);
+    yield put(fetchReservations.success(response.data));
   } catch (e) {
     yield put(fetchReservations.failure(e));
   } finally {

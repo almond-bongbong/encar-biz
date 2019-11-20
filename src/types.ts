@@ -1,3 +1,4 @@
+export const DATE_FORMAT = 'YYYY-MM-DD';
 export const DATETIME_FORMAT = 'YYYY-MM-DD HH:mm';
 
 export enum CalcType {
@@ -6,10 +7,17 @@ export enum CalcType {
 }
 
 export interface Meeting {
-  roomId: number;
-  title: string;
-  start: string;
-  end: string;
+  id: number;
+  name: string;
+  startedAt: string;
+  endedAt: string;
+  room: RoomResponse;
+}
+
+export interface RoomResponse {
+  id: number;
+  name: string;
+  floor: number;
 }
 
 export interface Room {
