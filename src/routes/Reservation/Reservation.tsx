@@ -260,7 +260,13 @@ const Reservation: React.FC<RouteComponentProps> = () => {
         const randomIndex = Math.floor(
           Math.random() * unUsedRoomsOnFloor.length,
         );
-        dispatch(setRecommendRoomId(unUsedRoomsOnFloor[randomIndex].id || -1));
+        dispatch(
+          setRecommendRoomId(
+            unUsedRoomsOnFloor[randomIndex]
+              ? unUsedRoomsOnFloor[randomIndex].id
+              : -1,
+          ),
+        );
       }
     }
   }, [
