@@ -45,14 +45,14 @@ const Container = styled.div``;
 
 const Content = styled.div`
   position: relative;
-  width: 1600px;
+  width: 1000px;
   max-width: 100%;
   margin: 0 auto;
   padding: 40px 20px;
 `;
 
 const Background = styled.div<BackgroundProps>`
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
