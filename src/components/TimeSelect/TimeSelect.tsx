@@ -4,9 +4,9 @@ import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
 import _ from 'lodash';
 import CustomScroll from 'react-custom-scroll';
 import 'react-custom-scroll/dist/customScroll.css';
-import isMobileDetector from 'lib/isMobileDetector';
 import moment, { Moment } from 'moment';
-import { addRootElement } from '../../lib/generateElement';
+import isMobileDetector from 'lib/isMobileDetector';
+import { addRootElement } from 'lib/generateElement';
 
 interface TimeSelectProps {
   value: Moment;
@@ -100,16 +100,13 @@ const TimeSelect: React.FC<TimeSelectProps> = ({
   };
 
   const hideTimeOptions = (): void => {
-    console.log('hide');
     setOptionsPosition(null);
   };
 
   const toggleShowOptions = (e: SyntheticEvent<HTMLButtonElement>): void => {
     if (optionsPosition) {
-      console.log('toggle hide');
       hideTimeOptions();
     } else {
-      console.log('toggle show');
       showTimeOptions(e);
     }
   };

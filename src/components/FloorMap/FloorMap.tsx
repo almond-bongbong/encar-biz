@@ -5,7 +5,6 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 import { Room } from 'types';
 import 'jquery';
-import ResponsiveImageMap from 'image-map';
 import Stair from 'components/Stair';
 import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
 import { useChangeFloor } from 'hooks/reservation';
@@ -91,8 +90,8 @@ const FloorMap: React.FC<FloorProps> = ({
   const selectedRoom = rooms.find(r => r.id === selectedRoomId);
 
   useEffect(() => {
-    ResponsiveImageMap('img[usemap]');
-  });
+    (window as any).imageMapResize();
+  }, []);
 
   const handleClickRoom = (id: number): void => {
     if (!isSwiping) {

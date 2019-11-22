@@ -8,7 +8,7 @@ const useChangeFloor: ChangeFloorHook = () => {
 
   return useCallback(
     (floor: number | string): void => {
-      history.push(`/?floor=${floor}`);
+      history.replace(`/?floor=${floor}`);
     },
     [history],
   );

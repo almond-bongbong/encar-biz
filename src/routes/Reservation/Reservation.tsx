@@ -34,6 +34,7 @@ import { useChangeFloor } from 'hooks/reservation';
 import bg18 from 'resources/images/main/bg-18.jpg';
 import bg19 from 'resources/images/main/bg-19.jpg';
 import useIsUseRoom from 'hooks/reservation/useIsUseRoom';
+import HeartButton from '../../components/HeartButton';
 
 type SelectedFloor = string | number;
 
@@ -332,10 +333,6 @@ const Reservation: React.FC<RouteComponentProps> = () => {
     dispatch(setSelectedRoomId(roomId));
   };
 
-  // const handleSaveReservation = (reservationId: number): void => {
-  //   setReservationResultId(reservationId);
-  // };
-
   return (
     <Container>
       <>
@@ -413,6 +410,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
           </SidePanel>
         </Content>
       </>
+      <HeartButton />
       {loading[FETCH_RESERVATIONS_REQUEST] && (
         <LoaderWrapper>
           <Loader color={'blue'} size={80} />

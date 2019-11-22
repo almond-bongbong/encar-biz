@@ -66,13 +66,28 @@ const SidePanel: React.FC<ModalPopupProps> = ({
     [closeHandler],
   );
 
+  const handleClose = useCallback(
+    (e: MouseEvent): void => {
+      if (
+        closeHandler &&
+        e.target instanceof Element &&
+        !e.target.closest('#side-panel-container')
+      ) {
+        closeHandler();
+      }
+    },
+    [closeHandler],
+  );
+
   useEffect(() => {
     document.addEventListener('keydown', handleKeyPress, false);
+    document.addEventListener('click', handleClose, true);
 
     return (): void => {
       document.removeEventListener('keydown', handleKeyPress, false);
+      document.removeEventListener('click', handleClose, true);
     };
-  }, [handleKeyPress]);
+  }, [handleKeyPress, handleClose]);
 
   return (
     <>

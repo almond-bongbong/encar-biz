@@ -1,26 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import styled, { css, SimpleInterpolation } from 'styled-components';
-import { blue, clearfix, hidden } from 'style/mixin';
+import React from 'react';
+import styled from 'styled-components';
+import { clearfix } from 'style/mixin';
 import _ from 'lodash';
 import { MEETING_ROOMS } from 'constants/meetingRoom';
 import moment from 'moment';
-import { roundMinutes } from 'lib/datetime';
 import { useSelector } from 'react-redux';
 import { RootState } from 'store';
-import { Meeting } from 'types';
 
 interface RoomDetailProps {
   roomId: number;
   selectedDateTime: string;
-}
-
-interface Time {
-  id: number;
-  startTime: string;
-  endTime: string;
-  reservedMeeting?: Meeting;
-  isReserved: boolean;
-  active: boolean;
 }
 
 const Container = styled.div`
@@ -64,24 +53,17 @@ const TimeTable = styled.div`
   border: 1px solid #eee;
 `;
 
-interface TimeProps {
-  active: boolean;
-  disabled: boolean;
-}
-
-const Time = styled.label<TimeProps>`
+const Time = styled.div`
   display: block;
   overflow: hidden;
-  padding: 5px 15px;
-  height: 34px;
+  padding: 10px 15px;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
-  cursor: pointer;
   color: #fff;
 
-  & > input {
-    ${hidden}
+  & + & {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   & .time {
@@ -89,25 +71,6 @@ const Time = styled.label<TimeProps>`
     color: #fff;
     font-family: ${({ theme }): string => theme.basicFont};
   }
-
-  ${({ disabled }): SimpleInterpolation =>
-    disabled
-      ? css`
-          opacity: 0.3;
-        `
-      : ''};
-  ${({ active }): SimpleInterpolation =>
-    active
-      ? css`
-          background-color: ${blue};
-
-          & .time {
-            color: #fff;
-          }
-        `
-      : css`
-          background-color: transparent;
-        `};
 `;
 
 const Tags = styled.ul`
@@ -134,59 +97,35 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
     (state: RootState) => state.reservation.reservations,
   );
   const roomData = MEETING_ROOMS.find(r => r.id === roomId);
-  const [times, setTimes] = useState<Time[]>([]);
 
-  useEffect(() => {
-    const initTimes: Time[] = _.range(9, 18.5, 0.5).map((hour, index) => {
-      const start = moment(selectedDateTime)
-        .set('hours', Math.floor(hour))
-        .set('minutes', (hour % 1) * 60);
-      const end = start.clone().add(30, 'minutes');
-      const startTime = start.format('HH:mm');
-      const endTime = end.format('HH:mm');
-      const reservedMeeting = reservations
-        .filter(r => r.room.id === roomId)
-        .find(r => start.isBetween(r.startedAt, r.endedAt, undefined, '[)'));
-      const isReserved = !!reservedMeeting;
-      const active =
-        !isReserved &&
-        roundMinutes(moment(selectedDateTime), 30).format('HH:mm') ===
-          startTime;
-
-      return {
-        id: index,
-        startTime,
-        endTime,
-        reservedMeeting,
-        isReserved,
-        active,
-      };
-    });
-
-    setTimes(initTimes);
-  }, [roomId, selectedDateTime, reservations]);
-
-  // const toggleSelectTime = (e: ChangeEvent<HTMLInputElement>): void => {
-  //   const { value, checked } = e.target;
-  //   const selectedTime = times.find(time => time.id === parseInt(value));
-  //   if (!selectedTime) {
-  //     return console.error(
-  //       `id ${parseInt(value)}의 time 데이터를 찾지 못했습니다.`,
-  //     );
-  //   }
-  //   const [hours, minutes] = selectedTime.startTime.split(':');
-  //   const checkedDateTime = moment(selectedDateTime);
+  // useEffect(() => {
+  //   const initTimes: Time[] = _.range(9, 20, 1).map((hour, index) => {
+  //     const start = moment(selectedDateTime)
+  //       .set('hours', Math.floor(hour))
+  //       .set('minutes', (hour % 1) * 60);
+  //     const end = start.clone().add(30, 'minutes');
+  //     const startTime = start.format('HH:mm');
+  //     const endTime = end.format('HH:mm');
+  //     const reservedMeeting = reservations
+  //       .filter(r => r.room.id === roomId)
+  //       .find(r => start.isBetween(r.startedAt, r.endedAt, undefined, '[)'));
+  //     const isReserved = !!reservedMeeting;
+  //     const active =
+  //       roundMinutes(moment(selectedDateTime), 30).format('HH:mm') ===
+  //       startTime;
   //
-  //   checkedDateTime.set('hours', parseInt(hours));
-  //   checkedDateTime.set('minutes', parseInt(minutes));
+  //     return {
+  //       id: index,
+  //       startTime,
+  //       endTime,
+  //       reservedMeeting,
+  //       isReserved,
+  //       active,
+  //     };
+  //   });
   //
-  //   setTimes(prev =>
-  //     prev.map(time => ({
-  //       ...time,
-  //       active: time.id === parseInt(value) ? checked : time.active,
-  //     })),
-  //   );
-  // };
+  //   setTimes(initTimes);
+  // }, [roomId, selectedDateTime, reservations]);
 
   return (
     <Container>
@@ -214,33 +153,16 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                 {moment(selectedDateTime).format('YYYY.MM.DD')}
               </SelectedDate>
               <TimeTable>
-                {times.map(
-                  ({
-                    id,
-                    active,
-                    reservedMeeting,
-                    isReserved,
-                    startTime,
-                    endTime,
-                  }) => (
-                    <Time key={id} active={active} disabled={isReserved}>
-                      <input
-                        type={'checkbox'}
-                        value={id}
-                        size={30}
-                        checked={active}
-                        disabled={isReserved}
-                        // onChange={toggleSelectTime}
-                      />
-                      <span
-                        className={'time'}
-                      >{`${startTime} ~ ${endTime}`}</span>
-                      <span className={'name'}>
-                        {reservedMeeting && reservedMeeting.name}
-                      </span>
-                    </Time>
-                  ),
-                )}
+                {_.range(9, 20, 1).map(hour => (
+                  <Time key={hour}>
+                    <span className={'time'}>
+                      {moment(selectedDateTime)
+                        .set('hours', Math.floor(hour))
+                        .set('minutes', 0)
+                        .format('HH:mm')}
+                    </span>
+                  </Time>
+                ))}
               </TimeTable>
             </Schedule>
           </Content>
