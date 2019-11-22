@@ -16,7 +16,7 @@ function useIsUseRoom(roomId: number): Room | null | undefined {
         r.startedAt,
         r.endedAt,
         undefined,
-        '[]',
+        '[)',
       ),
   );
 
