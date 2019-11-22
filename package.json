@@ -60,7 +60,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "surge ./build/ --domain  wrong-train.surge.sh"
+    "predeploy": "npm run build",
+    "deploy": "surge ./build/ --domain wrong-train.surge.sh"
   },
   "browserslist": {
     "production": [
