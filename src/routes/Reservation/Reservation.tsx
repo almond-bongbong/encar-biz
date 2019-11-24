@@ -84,7 +84,7 @@ const LoaderWrapper = styled.div`
 `;
 
 const DatePickerWrapper = styled.div`
-  display: block;
+  display: inline-block;
   vertical-align: middle;
 
   & .SingleDatePickerInput {
@@ -92,12 +92,12 @@ const DatePickerWrapper = styled.div`
   }
 
   & .DateInput {
-    width: 140px;
     background: transparent;
   }
 
   & .DateInput_input {
-    padding-left: 0;
+    padding: 0;
+    border: 0;
     background: transparent;
     color: #eee;
     font-weight: 400;
@@ -106,8 +106,15 @@ const DatePickerWrapper = styled.div`
   }
 
   & .DateInput_fang {
-    margin-top: 1px;
+    transform: translateY(-1px);
   }
+`;
+
+const DateTimeArea = styled.div`
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
 `;
 
 const RecommendArea = styled.div`
@@ -349,30 +356,6 @@ const Reservation: React.FC<RouteComponentProps> = () => {
           />
 
           <RecommendArea>
-            <DatePickerWrapper>
-              <SingleDatePicker
-                id={'datepicker'}
-                date={selectedDateTimeMoment}
-                onDateChange={handleDate}
-                focused={showCalendar}
-                onFocusChange={({ focused }): void =>
-                  setShowCalendar(!!focused)
-                }
-                hideKeyboardShortcutsPanel={true}
-                monthFormat={'YYYY MMMM'}
-                displayFormat={'YYYY.MM.DD'}
-                numberOfMonths={1}
-                noBorder={true}
-                readOnly
-              />
-            </DatePickerWrapper>
-
-            <TimeSelect
-              value={selectedDateTimeMoment}
-              timerActivated={!!selectedDateTimeInterval}
-              onSelectTime={handleTime}
-            />
-
             {selectedRoom && (
               <Recommend>
                 <em>{selectedRoom.name}</em>
@@ -410,6 +393,32 @@ const Reservation: React.FC<RouteComponentProps> = () => {
           </SidePanel>
         </Content>
       </>
+
+      <DateTimeArea>
+        <DatePickerWrapper>
+          <SingleDatePicker
+            id={'datepicker'}
+            date={selectedDateTimeMoment}
+            onDateChange={handleDate}
+            focused={showCalendar}
+            onFocusChange={({ focused }): void => setShowCalendar(!!focused)}
+            hideKeyboardShortcutsPanel={true}
+            monthFormat={'YYYY MMMM'}
+            displayFormat={'YYYY.MM.DD'}
+            numberOfMonths={1}
+            noBorder={true}
+            openDirection={'up'}
+            readOnly
+          />
+        </DatePickerWrapper>
+
+        <TimeSelect
+          value={selectedDateTimeMoment}
+          timerActivated={!!selectedDateTimeInterval}
+          onSelectTime={handleTime}
+        />
+      </DateTimeArea>
+
       <HeartButton />
       {loading[FETCH_RESERVATIONS_REQUEST] && (
         <LoaderWrapper>

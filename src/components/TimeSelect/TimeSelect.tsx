@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useEffect, useState } from 'react';
+import React, { SyntheticEvent, useState } from 'react';
 import { createPortal } from 'react-dom';
 import styled, { css, FlattenSimpleInterpolation } from 'styled-components';
 import _ from 'lodash';
@@ -23,21 +23,30 @@ interface TimeProps {
   isMobile: boolean;
 }
 
-const Container = styled.div``;
+const Container = styled.div`
+  display: inline-block;
+  vertical-align: middle;
+`;
 
 const TimeButton = styled.button`
   display: inline-block;
+  position: relative;
   font-size: 40px;
 `;
 
-const Now = styled.span`
-  margin-right: 10px;
-  font-size: 30px;
+const SelectedTime = styled.span`
+  vertical-align: middle;
 `;
 
 const Second = styled.span`
-  margin-left: 10px;
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  margin-left: 15px;
   font-size: 22px;
+  vertical-align: middle;
+  white-space: nowrap;
+  transform: translateY(-50%);
 `;
 
 const Options = styled.div<OptionsProps>`
@@ -95,7 +104,7 @@ const TimeSelect: React.FC<TimeSelectProps> = ({
 
   const showTimeOptions = (e: SyntheticEvent<HTMLButtonElement>): void => {
     const rect = e.currentTarget.getBoundingClientRect();
-    const top = rect.top + rect.height;
+    const top = rect.top - 300;
     setOptionsPosition([top, rect.left]);
   };
 
@@ -104,6 +113,7 @@ const TimeSelect: React.FC<TimeSelectProps> = ({
   };
 
   const toggleShowOptions = (e: SyntheticEvent<HTMLButtonElement>): void => {
+    console.log(optionsPosition);
     if (optionsPosition) {
       hideTimeOptions();
     } else {
@@ -111,25 +121,14 @@ const TimeSelect: React.FC<TimeSelectProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (optionsPosition) {
-      window.addEventListener('click', hideTimeOptions, true);
-    }
-
-    return (): void => {
-      window.removeEventListener('click', hideTimeOptions, true);
-    };
-  }, [optionsPosition]);
-
   return (
     <Container>
       <TimeButton
         type={'button'}
         onClick={toggleShowOptions}
-        // onBlur={hideTimeOptions}
+        onBlur={hideTimeOptions}
       >
-        {timerActivated && <Now>지금</Now>}
-        {value.format(`A h시 m분`)}
+        <SelectedTime>{value.format(`A h시 m분`)}</SelectedTime>
         {timerActivated && <Second>{`${moment().format('ss')}초`}</Second>}
       </TimeButton>
 
