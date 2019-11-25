@@ -24,7 +24,7 @@ const FloorSlider: React.FC<FloorSliderProps> = ({
   const sliderSettings = useMemo<Settings>(
     () => ({
       accessibility: false,
-      speed: 700,
+      speed: 500,
       arrows: false,
       vertical: true,
       verticalSwiping: true,

@@ -27,5 +27,7 @@ export interface Room {
   x: number;
   y: number;
   coords: string;
-  tags?: string[];
+  polyPosition?: { x: number; y: number };
+  polySize?: { width: number; height: number };
+  polyPoints?: string;
 }

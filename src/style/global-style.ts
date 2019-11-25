@@ -38,4 +38,14 @@ export default createGlobalStyle`
   *:focus {
     outline: 0;
   }
+  
+  @-webkit-keyframes dash {
+    to {
+      stroke-dashoffset: 1000;
+    }
+  }
+  .path {
+    -webkit-animation: dash 30s linear infinite;
+    stroke-dasharray: 8;
+  }
 `;

@@ -46,8 +46,8 @@ const Container = styled.div``;
 
 const Content = styled.div`
   position: relative;
-  width: 1000px;
   max-width: 100%;
+  height: 100vh;
   margin: 0 auto;
   padding: 40px 20px;
 `;
@@ -72,7 +72,7 @@ const Background = styled.div<BackgroundProps>`
     right: 0;
     bottom: 0;
     left: 0;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.8);
   }
 `;
 
@@ -84,7 +84,7 @@ const LoaderWrapper = styled.div`
 `;
 
 const DatePickerWrapper = styled.div`
-  display: inline-block;
+  display: block;
   vertical-align: middle;
 
   & .SingleDatePickerInput {
@@ -100,8 +100,7 @@ const DatePickerWrapper = styled.div`
     border: 0;
     background: transparent;
     color: #eee;
-    font-weight: 400;
-    font-size: 22px;
+    font-size: 26px;
     font-family: inherit;
   }
 
@@ -113,30 +112,34 @@ const DatePickerWrapper = styled.div`
 const DateTimeArea = styled.div`
   position: absolute;
   bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 100px;
+  font-size: 26px;
 `;
 
 const RecommendArea = styled.div`
-  position: relative;
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  font-size: 45px;
 `;
 
 const Recommend = styled.p`
-  margin-top: 10px;
-  font-size: 28px;
-
   em {
+    display: inline-block;
+    width: 360px;
     margin-right: 10px;
-    font-size: 40px;
-    text-decoration: underline;
+    border-bottom: 2px solid #d8d8d8;
+    text-align: center;
+    font-size: 58px;
   }
 `;
 
 const TabWrapper = styled(FloorTab)`
   position: absolute;
-  top: 50px;
-  right: 20px;
+  bottom: 100px;
+  left: 50%;
   z-index: 10;
+  transform: translateX(-50%);
 
   @media screen and (max-width: 768px) {
     position: static;
@@ -146,8 +149,11 @@ const TabWrapper = styled(FloorTab)`
 `;
 
 const FloorSliderWrapper = styled.div`
-  position: relative;
-  margin-top: 30px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-35%, -50%);
 `;
 
 const Reservation: React.FC<RouteComponentProps> = () => {
@@ -350,12 +356,13 @@ const Reservation: React.FC<RouteComponentProps> = () => {
             value={(Array.isArray(floor) ? floor[0] : floor) || '19'}
             onClick={handleFloor}
             items={[
-              { value: '18', label: '18F.' },
-              { value: '19', label: '19F.' },
+              { value: '18', label: '18F' },
+              { value: '19', label: '19F' },
             ]}
           />
 
           <RecommendArea>
+            <div>지금은...</div>
             {selectedRoom && (
               <Recommend>
                 <em>{selectedRoom.name}</em>

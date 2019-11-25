@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'store';
 import { Room } from 'types';
 import 'jquery';
-import Stair from 'components/Stair';
-import redArrowDown from 'resources/images/reservation/red-arrow-down.png';
-import { useChangeFloor } from 'hooks/reservation';
+import arrow from 'resources/images/reservation/icon-arrow.png';
+import iconHere from 'resources/images/reservation/icon-here.png';
+import iconCanteen from 'resources/images/reservation/icon-canteen.png';
 
 interface FloorProps {
   floor: number;
@@ -48,7 +48,7 @@ const Marker = styled.img<MarkerProps>`
   top: ${({ y }): number => y}%;
   width: 40px;
   font-size: 20px;
-  transform: translate(-50%, -60px);
+  transform: translate(-50%, -70px);
   animation: point 0.5s infinite alternate;
 
   @keyframes point {
@@ -61,18 +61,16 @@ const Marker = styled.img<MarkerProps>`
   }
 `;
 
-const StairOn18 = styled(Stair)`
+const Here18 = styled.img`
   position: absolute;
-  top: 0;
-  left: 75%;
-  transform: translateX(-50%);
+  top: 25%;
+  left: 60%;
 `;
 
-const StairOn19 = styled(Stair)`
+const Canteen18 = styled.img`
   position: absolute;
-  bottom: 0;
-  left: 40%;
-  transform: translateX(-50%);
+  bottom: 17%;
+  left: 30%;
 `;
 
 const FloorMap: React.FC<FloorProps> = ({
@@ -83,7 +81,6 @@ const FloorMap: React.FC<FloorProps> = ({
   isSwiping,
 }) => {
   const mapName = `image-map${floor}`;
-  const changeFloor = useChangeFloor();
   const { reservations, selectedRoomId } = useSelector(
     (state: RootState) => state.reservation,
   );
@@ -97,10 +94,6 @@ const FloorMap: React.FC<FloorProps> = ({
     if (!isSwiping) {
       onClickRoom(id);
     }
-  };
-
-  const handleFloor = (floor: number): void => {
-    changeFloor(floor);
   };
 
   return (
@@ -128,6 +121,9 @@ const FloorMap: React.FC<FloorProps> = ({
             name={room.name}
             x={room.x}
             y={room.y}
+            polyPosition={room.polyPosition}
+            polySize={room.polySize}
+            polyPoints={room.polyPoints}
             meetings={reservations.filter(r => r.room.id === room.id)}
           />
         ))}
@@ -135,15 +131,15 @@ const FloorMap: React.FC<FloorProps> = ({
         <Marker
           x={selectedRoom ? selectedRoom.x : -9999}
           y={selectedRoom ? selectedRoom.y : -9999}
-          src={redArrowDown}
+          src={arrow}
           alt={`선택된 회의실`}
         />
 
         {floor === 18 && (
-          <StairOn18 direction={'up'} onClick={(): void => handleFloor(19)} />
-        )}
-        {floor === 19 && (
-          <StairOn19 direction={'down'} onClick={(): void => handleFloor(18)} />
+          <>
+            <Here18 src={iconHere} />
+            <Canteen18 src={iconCanteen} />
+          </>
         )}
       </MapArea>
     </Container>

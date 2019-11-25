@@ -1,10 +1,11 @@
 import {
-  add30Minutes, FETCH_RESERVATIONS_REQUEST,
+  add30Minutes,
   fetchReservations,
   minus30Minutes,
   selectDateTime,
   setRecommendRoomId,
   setSelectedRoomId,
+  FETCH_RESERVATIONS_REQUEST,
 } from './actions';
 import { ActionType } from 'typesafe-actions';
 import { Meeting } from 'types';

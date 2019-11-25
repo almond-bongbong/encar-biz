@@ -31,7 +31,8 @@ const Container = styled.div`
 const TimeButton = styled.button`
   display: inline-block;
   position: relative;
-  font-size: 40px;
+  font-size: 39px;
+  border-bottom: 2px solid #d8d8d8;
 `;
 
 const SelectedTime = styled.span`
@@ -39,14 +40,9 @@ const SelectedTime = styled.span`
 `;
 
 const Second = styled.span`
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  margin-left: 15px;
-  font-size: 22px;
+  margin-left: 10px;
   vertical-align: middle;
   white-space: nowrap;
-  transform: translateY(-50%);
 `;
 
 const Options = styled.div<OptionsProps>`

@@ -7,6 +7,10 @@ interface TabButtonProps {
   active: boolean;
 }
 
+interface BackgroundProps {
+  left: number;
+}
+
 interface Props {
   value: valueType;
   items: {
@@ -19,19 +23,26 @@ interface Props {
 
 const TabWrapper = styled.div`
   overflow: hidden;
+  padding: 0 5px;
+  border: 4px solid #fff;
+  border-radius: 55px;
+  background: rgba(0, 0, 0, 0.8);
   font-size: 0;
 `;
 
 const TabButton = styled.button<TabButtonProps>`
   display: inline-block;
-  padding: 10px;
-  color: ${(props): string => (props.active ? '#fff' : '#787878')};
-  font-size: 28px;
+  position: relative;
+  z-index: 20;
+  padding: 14px 25px 7px;
+  color: #fff;
+  font-size: 34px;
   cursor: pointer;
+  transition: color 0.3s;
   ${(props): SimpleInterpolation =>
     props.active
       ? css`
-          text-decoration: underline;
+          color: #000;
         `
       : ''}
 
@@ -40,9 +51,22 @@ const TabButton = styled.button<TabButtonProps>`
   }
 `;
 
+const Background = styled.div<BackgroundProps>`
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  left: ${({ left }): number => left}px;
+  z-index: 10;
+  width: 110px;
+  border-radius: 35px;
+  background-color: #fff;
+  transition: left 0.3s;
+`;
+
 const FloorTab: React.FC<Props> = ({ value, items, onClick, className }) => {
   return (
     <TabWrapper className={className}>
+      <Background left={value === '18' ? -1 : 104} />
       {items.map(item => (
         <TabButton
           type="button"

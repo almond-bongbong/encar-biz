@@ -73,22 +73,6 @@ const Time = styled.div`
   }
 `;
 
-const Tags = styled.ul`
-  margin-top: 15px;
-  font-size: 0;
-  text-align: left;
-`;
-
-const Tag = styled.li`
-  display: inline-block;
-  font-size: 15px;
-  vertical-align: middle;
-
-  & + & {
-    margin-left: 10px;
-  }
-`;
-
 const RoomDetail: React.FC<RoomDetailProps> = ({
   roomId,
   selectedDateTime,
@@ -140,13 +124,6 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                 }
                 alt={'회의실 전경'}
               />
-              {roomData.tags && (
-                <Tags>
-                  {roomData.tags.map(tag => (
-                    <Tag key={tag}>{`#${tag}`}</Tag>
-                  ))}
-                </Tags>
-              )}
             </RoomInfo>
             <Schedule>
               <SelectedDate>
