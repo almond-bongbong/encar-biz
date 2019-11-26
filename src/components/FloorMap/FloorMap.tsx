@@ -8,6 +8,7 @@ import 'jquery';
 import arrow from 'resources/images/reservation/icon-arrow.png';
 import iconHere from 'resources/images/reservation/icon-here.png';
 import iconCanteen from 'resources/images/reservation/icon-canteen.png';
+import iconRetire from 'resources/images/reservation/icon-retiring.png';
 
 interface FloorProps {
   floor: number;
@@ -63,14 +64,23 @@ const Marker = styled.img<MarkerProps>`
 
 const Here18 = styled.img`
   position: absolute;
-  top: 25%;
-  left: 60%;
+  top: 29%;
+  left: 59%;
+  width: 70px;
 `;
 
 const Canteen18 = styled.img`
   position: absolute;
-  bottom: 17%;
-  left: 30%;
+  bottom: 18%;
+  left: 31%;
+  width: 70px;
+`;
+
+const Retire18 = styled.img`
+  position: absolute;
+  bottom: 42%;
+  left: 21%;
+  width: 70px;
 `;
 
 const FloorMap: React.FC<FloorProps> = ({
@@ -139,6 +149,7 @@ const FloorMap: React.FC<FloorProps> = ({
           <>
             <Here18 src={iconHere} />
             <Canteen18 src={iconCanteen} />
+            <Retire18 src={iconRetire} />
           </>
         )}
       </MapArea>

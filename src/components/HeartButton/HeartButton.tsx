@@ -3,8 +3,8 @@ import styled from 'styled-components';
 
 const HeartWrapper = styled.div`
   position: absolute;
-  right: 100px;
-  bottom: 100px;
+  right: 50px;
+  bottom: 50px;
 `;
 
 const Heart = styled.button`

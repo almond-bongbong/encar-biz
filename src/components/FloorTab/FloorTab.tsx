@@ -34,7 +34,7 @@ const TabButton = styled.button<TabButtonProps>`
   display: inline-block;
   position: relative;
   z-index: 20;
-  padding: 14px 25px 7px;
+  padding: 8px 25px 4px;
   color: #fff;
   font-size: 34px;
   cursor: pointer;
@@ -66,7 +66,7 @@ const Background = styled.div<BackgroundProps>`
 const FloorTab: React.FC<Props> = ({ value, items, onClick, className }) => {
   return (
     <TabWrapper className={className}>
-      <Background left={value === '18' ? -1 : 104} />
+      <Background left={value === '18' ? -1 : 105} />
       {items.map(item => (
         <TabButton
           type="button"
