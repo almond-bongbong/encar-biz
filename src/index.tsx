@@ -12,6 +12,9 @@ import 'slick-carousel/slick/slick-theme.css';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 
+import axios from 'axios';
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
 const composeEnhancers =
   (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const sagaMiddleware = createSagaMiddleware();

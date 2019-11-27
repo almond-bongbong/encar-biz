@@ -3,7 +3,7 @@ import reservationsMock from 'constants/reservationsMock';
 import { Meeting } from '../types';
 
 export const getReservations = (date: string): Promise<AxiosResponse> =>
-  axios.get('http://10.19.1.111:8090/rooms/reservations', {
+  axios.get('/rooms/reservations', {
     params: { fromDt: date },
   });
 
