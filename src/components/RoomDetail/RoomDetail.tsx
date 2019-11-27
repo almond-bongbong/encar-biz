@@ -21,7 +21,12 @@ interface PhotoProps {
   backgroundImage: string;
 }
 
+interface SelectedTimeBarProps {
+  topPx: number;
+}
+
 const Container = styled.div`
+  overflow: hidden;
   padding: 10px;
 `;
 
@@ -97,6 +102,7 @@ const Time = styled.div`
     top: 50%;
     right: 0;
     left: 60px;
+    margin-top: -1px;
     border-top: 1px solid #666;
   }
 `;
@@ -124,6 +130,27 @@ const ReservationArea = styled.div<ReservationAreaProps>`
 
   & .time {
     margin-right: 10px;
+  }
+`;
+
+const SelectedTimeBar = styled.div<SelectedTimeBarProps>`
+  position: absolute;
+  right: -6px;
+  left: 80px;
+  top: ${({ topPx }): number => Math.ceil(topPx)}px;
+  border-top: 2px solid #ea4335;
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    margin-top: -7px;
+    border-radius: 50%;
+    background-color: #ea4335;
   }
 `;
 
@@ -194,6 +221,19 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                     </div>
                   </ReservationArea>
                 ))}
+                <SelectedTimeBar
+                  topPx={
+                    50 *
+                      ((moment(selectedDateTime).diff(
+                        moment(selectedDateTime)
+                          .set('hours', Math.floor(9))
+                          .set('minutes', 0),
+                      ) *
+                        0.9) /
+                        3600000) +
+                    25 * 0.905
+                  }
+                />
               </TimeTable>
             </Schedule>
           </Content>
