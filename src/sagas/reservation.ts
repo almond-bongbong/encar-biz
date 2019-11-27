@@ -11,7 +11,7 @@ function* getReservations(action: FetchReservationsAction): Generator {
   try {
     yield put(loadingStart(action.type));
     const response: any = yield call(
-      reservationApi.getReservationsMock,
+      reservationApi.getReservations,
       action.payload,
     );
     yield put(fetchReservations.success(response.data));

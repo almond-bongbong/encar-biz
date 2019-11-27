@@ -1,5 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { getLikeCount, postLikeCount } from 'api/like';
+import heart from 'resources/images/main/heart.png';
 
 const HeartWrapper = styled.div`
   position: absolute;
@@ -11,8 +13,7 @@ const Heart = styled.button`
   position: relative;
   width: 100px;
   height: 100px;
-  background: url(https://cssanimation.rocks/images/posts/steps/heart.png)
-    no-repeat right;
+  background: url(${heart}) no-repeat right;
   cursor: pointer;
 
   &.is_animating {
@@ -39,8 +40,19 @@ const Count = styled.div`
 
 const HeartButton: React.FC = () => {
   const heartRef = useRef<HTMLButtonElement>(null);
+  const [likeCount, setLikeCount] = useState(0);
 
-  const startAnimate = (): void => {
+  useEffect(() => {
+    (async (): Promise<void> => {
+      const response = await getLikeCount();
+      setLikeCount(response.data.count);
+    })();
+  }, []);
+
+  const startAnimate = async (): Promise<void> => {
+    const response = await postLikeCount();
+    setLikeCount(response.data.count);
+
     setTimeout(() => {
       if (heartRef.current) heartRef.current.classList.remove('is_animating');
     }, 10);
@@ -62,7 +74,7 @@ const HeartButton: React.FC = () => {
         onAnimationEnd={endAnimate}
         ref={heartRef}
       />
-      <Count>534</Count>
+      <Count>{likeCount}</Count>
     </HeartWrapper>
   );
 };

@@ -27,14 +27,14 @@ import {
 import { DATE_FORMAT, DATETIME_FORMAT, Meeting, Room } from 'types';
 import { RootState } from 'store';
 import { SingleDatePicker } from 'react-dates';
-import { SidePanel, Loader } from 'components/common';
+import { Loader, SidePanel } from 'components/common';
 import RoomDetail from 'components/RoomDetail';
 import FloorSlider from 'components/FloorSlider';
 import { useChangeFloor } from 'hooks/reservation';
 import bg18 from 'resources/images/main/bg-18.jpg';
 import bg19 from 'resources/images/main/bg-19.jpg';
 import useIsUseRoom from 'hooks/reservation/useIsUseRoom';
-import HeartButton from '../../components/HeartButton';
+import HeartButton from 'components/HeartButton';
 
 type SelectedFloor = string | number;
 
@@ -173,6 +173,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   const selectedDateTimeMoment = useMemo(() => moment(selectedDateTime), [
     selectedDateTime,
   ]);
+  const selectedDate = selectedDateTimeMoment.format(DATE_FORMAT);
   const { search } = useLocation();
   const { floor } = qs.parse(search);
   const currentFloor = parseInt(floor ? floor.toString() : '18');
@@ -184,6 +185,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   >(null);
   const [eventLivingTimer, setEventLivingTimer] = useState<number | null>(null);
   const changeFloor = useChangeFloor();
+  const fetchReservationsInterval = useRef<number | null>(null);
 
   const handleFloor = useCallback(
     (floor: SelectedFloor): void => {
@@ -213,6 +215,19 @@ const Reservation: React.FC<RouteComponentProps> = () => {
     },
     [dispatch],
   );
+
+  useEffect(() => {
+    dispatch(fetchReservations.request(selectedDate));
+    fetchReservationsInterval.current = setInterval(() => {
+      dispatch(fetchReservations.request(selectedDate));
+    }, 30 * 1000);
+
+    return (): void => {
+      if (fetchReservationsInterval.current) {
+        clearInterval(fetchReservationsInterval.current);
+      }
+    };
+  }, [dispatch, selectedDate]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -306,12 +321,6 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   useEffect(() => {
     startInterval();
   }, [startInterval]);
-
-  useEffect(() => {
-    dispatch(
-      fetchReservations.request(selectedDateTimeMoment.format(DATE_FORMAT)),
-    );
-  }, [dispatch, selectedDateTimeMoment]);
 
   useEffect(() => {
     if (slider.current) {

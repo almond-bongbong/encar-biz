@@ -12,6 +12,15 @@ interface RoomDetailProps {
   selectedDateTime: string;
 }
 
+interface ReservationAreaProps {
+  topPx: number;
+  heightPx: number;
+}
+
+interface PhotoProps {
+  backgroundImage: string;
+}
+
 const Container = styled.div`
   padding: 10px;
 `;
@@ -25,10 +34,22 @@ const Title = styled.h2`
 
 const RoomInfo = styled.div``;
 
-const Photo = styled.img`
+const Photo = styled.div<PhotoProps>`
   display: block;
   width: 100%;
+  height: 250px;
+  background-image: url(${({ backgroundImage }): string => backgroundImage});
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  background-size: cover;
   box-shadow: 2px 2px 4px 3px rgba(0, 0, 0, 0.2);
+`;
+
+const NoPhoto = styled.div`
+  display: block;
+  width: 100%;
+  height: 250px;
+  background-color: #666;
 `;
 
 const Content = styled.div`
@@ -44,7 +65,7 @@ const Schedule = styled.div`
 const SelectedDate = styled.div`
   position: absolute;
   top: -40px;
-  left: 0;
+  left: 10px;
   font-weight: 700;
   font-size: 18px;
 `;
@@ -55,21 +76,54 @@ const TimeTable = styled.div`
 
 const Time = styled.div`
   display: block;
+  position: relative;
   overflow: hidden;
-  padding: 10px 15px;
+  padding: 10px 15px 9px;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
   color: #fff;
 
-  & + & {
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-  }
-
   & .time {
     margin-right: 10px;
     color: #fff;
     font-family: ${({ theme }): string => theme.basicFont};
+  }
+
+  &:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 60px;
+    border-top: 1px solid #666;
+  }
+`;
+
+const ReservationArea = styled.div<ReservationAreaProps>`
+  display: flex;
+  position: absolute;
+  top: ${({ topPx }): number => topPx}px;
+  left: 80px;
+  right: 20px;
+  height: ${({ heightPx }): number => heightPx}px;
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fff;
+  font-size: 13px;
+  color: #666;
+  align-items: center;
+
+  & .wrap_text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .time {
+    margin-right: 10px;
   }
 `;
 
@@ -80,36 +134,8 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
   const reservations = useSelector(
     (state: RootState) => state.reservation.reservations,
   );
+  const reservationsByRoomId = reservations.filter(r => r.room.id === roomId);
   const roomData = MEETING_ROOMS.find(r => r.id === roomId);
-
-  // useEffect(() => {
-  //   const initTimes: Time[] = _.range(9, 20, 1).map((hour, index) => {
-  //     const start = moment(selectedDateTime)
-  //       .set('hours', Math.floor(hour))
-  //       .set('minutes', (hour % 1) * 60);
-  //     const end = start.clone().add(30, 'minutes');
-  //     const startTime = start.format('HH:mm');
-  //     const endTime = end.format('HH:mm');
-  //     const reservedMeeting = reservations
-  //       .filter(r => r.room.id === roomId)
-  //       .find(r => start.isBetween(r.startedAt, r.endedAt, undefined, '[)'));
-  //     const isReserved = !!reservedMeeting;
-  //     const active =
-  //       roundMinutes(moment(selectedDateTime), 30).format('HH:mm') ===
-  //       startTime;
-  //
-  //     return {
-  //       id: index,
-  //       startTime,
-  //       endTime,
-  //       reservedMeeting,
-  //       isReserved,
-  //       active,
-  //     };
-  //   });
-  //
-  //   setTimes(initTimes);
-  // }, [roomId, selectedDateTime, reservations]);
 
   return (
     <Container>
@@ -118,12 +144,11 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
           <Title>{roomData.name}</Title>
           <Content>
             <RoomInfo>
-              <Photo
-                src={
-                  'https://campusu.co.kr/wp-content/uploads/2016/12/%ED%81%AC%EA%B8%B0%EB%B3%80%ED%99%98_KENN4462-1.jpg'
-                }
-                alt={'회의실 전경'}
-              />
+              {roomData.imgUrl ? (
+                <Photo backgroundImage={roomData.imgUrl} />
+              ) : (
+                <NoPhoto />
+              )}
             </RoomInfo>
             <Schedule>
               <SelectedDate>
@@ -139,6 +164,35 @@ const RoomDetail: React.FC<RoomDetailProps> = ({
                         .format('HH:mm')}
                     </span>
                   </Time>
+                ))}
+                {reservationsByRoomId.map(r => (
+                  <ReservationArea
+                    key={r.id}
+                    topPx={
+                      50 *
+                        ((moment(r.startedAt).diff(
+                          moment(selectedDateTime)
+                            .set('hours', Math.floor(9))
+                            .set('minutes', 0),
+                        ) *
+                          0.905) /
+                          3600000) +
+                      25 * 0.905
+                    }
+                    heightPx={
+                      50 *
+                      ((moment(r.endedAt).diff(moment(r.startedAt)) * 0.91) /
+                        3600000)
+                    }
+                  >
+                    <div className="wrap_text">
+                      <span className="time">
+                        {moment(r.startedAt).format('HH:mm')}-
+                        {moment(r.endedAt).format('HH:mm')}
+                      </span>
+                      <span className="title">{r.name}</span>
+                    </div>
+                  </ReservationArea>
                 ))}
               </TimeTable>
             </Schedule>

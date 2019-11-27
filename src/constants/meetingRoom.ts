@@ -1,3 +1,16 @@
+import pata from 'resources/images/room/room_patagonia.jpg';
+import bali from 'resources/images/room/room_bali.jpg';
+import bora from 'resources/images/room/room_borabora.jpg';
+import hawa from 'resources/images/room/room_hawai.jpg';
+import jeju from 'resources/images/room/room_jeju.jpg';
+import kank from 'resources/images/room/room_kankoon.jpg';
+import kota from 'resources/images/room/room_kota.jpg';
+import mald from 'resources/images/room/room_maldives.jpg';
+import okin from 'resources/images/room/room_okinawa.jpg';
+import sant from 'resources/images/room/room_santorini.jpg';
+import tahi from 'resources/images/room/room_tahiti.jpg';
+import teap from 'resources/images/room/room_teap.jpg';
+
 export const MEETING_ROOMS = [
   {
     id: 74,
@@ -5,10 +18,11 @@ export const MEETING_ROOMS = [
     name: '파타고니아',
     x: 44,
     y: 67,
+    imgUrl: pata,
     coords: '603,673,880,566,1024,644,748,751',
     polyPosition: { x: -155, y: -100 },
     polySize: { width: 380, height: 164 },
-    polyPoints: '25 103, 250 15, 355 69, 131 157',
+    polyPoints: '25 102, 250 13, 359 69, 131 158',
   },
   // {
   //   id: 2,
@@ -24,10 +38,11 @@ export const MEETING_ROOMS = [
     name: '타히티',
     x: 30.5,
     y: 60.5,
+    imgUrl: tahi,
     coords: '456,591,585,541,682,592,553,648',
     polyPosition: { x: -130, y: -106 },
     polySize: { width: 218, height: 95 },
-    polyPoints: '26 53, 121 15, 191 52, 95 89',
+    polyPoints: '25 53, 122 13, 196 51, 95 91',
   },
   {
     id: 76,
@@ -35,10 +50,11 @@ export const MEETING_ROOMS = [
     name: '칸쿤',
     x: 37.5,
     y: 55,
+    imgUrl: kank,
     coords: '595,532,720,486,824,537,692,589',
     polyPosition: { x: -180, y: -140 },
     polySize: { width: 215, height: 90 },
-    polyPoints: '22 49, 120 11, 186 47, 91 85',
+    polyPoints: '20 49, 120 9, 191 47, 91 86',
   },
   {
     id: 84,
@@ -46,10 +62,11 @@ export const MEETING_ROOMS = [
     name: '산토리니',
     x: 30,
     y: 51,
+    imgUrl: sant,
     coords: '425,511,615,432,715,479,521,557',
     polyPosition: { x: -100, y: -100 },
     polySize: { width: 260, height: 115 },
-    polyPoints: '13 73, 165 12, 232 49, 82 108',
+    polyPoints: '11 72, 167 11, 237 49, 82 110',
   },
   {
     id: 85,
@@ -57,10 +74,11 @@ export const MEETING_ROOMS = [
     name: '보라보라',
     x: 27,
     y: 42.3,
+    imgUrl: bora,
     coords: '405,394,483,362,610,427,528,459',
     polyPosition: { x: -70, y: -80 },
     polySize: { width: 195, height: 85 },
-    polyPoints: '22 33, 75 11, 170 60, 117 80',
+    polyPoints: '20 32, 75 9, 172 61, 118 83',
   },
   // {
   //   id: 7,
@@ -76,7 +94,11 @@ export const MEETING_ROOMS = [
     name: '몰디브',
     x: 81,
     y: 15,
+    imgUrl: mald,
     coords: '1319,134,1498,48,1855,215,1655,305',
+    polyPosition: { x: -282, y: -185 },
+    polySize: { width: 500, height: 250 },
+    polyPoints: '22 86, 173 20, 480 165, 320 235',
   },
   {
     id: 69,
@@ -84,7 +106,11 @@ export const MEETING_ROOMS = [
     name: '오키나와',
     x: 31,
     y: 75,
+    imgUrl: okin,
     coords: '443,736,603,669,737,734,572,799',
+    polyPosition: { x: -115, y: -100 },
+    polySize: { width: 280, height: 130 },
+    polyPoints: '22 68, 155 15, 255 65, 120 119',
   },
   {
     id: 70,
@@ -92,7 +118,11 @@ export const MEETING_ROOMS = [
     name: '코타키나발루',
     x: 24,
     y: 68,
+    imgUrl: kota,
     coords: '311,668,471,599,600,664,438,733',
+    polyPosition: { x: -65, y: -70 },
+    polySize: { width: 280, height: 130 },
+    polyPoints: '22 68, 155 15, 255 65, 120 119',
   },
   {
     id: 71,
@@ -100,7 +130,11 @@ export const MEETING_ROOMS = [
     name: '발리',
     x: 17,
     y: 61,
+    imgUrl: bali,
     coords: '191,601,355,536,468,592,308,664',
+    polyPosition: { x: -235, y: -170 },
+    polySize: { width: 280, height: 130 },
+    polyPoints: '22 68, 155 12, 245 59, 115 115',
   },
   {
     id: 72,
@@ -108,7 +142,11 @@ export const MEETING_ROOMS = [
     name: '하와이',
     x: 61,
     y: 54,
+    imgUrl: hawa,
     coords: '987,522,1164,454,1304,527,1132,597',
+    polyPosition: { x: -190, y: -140 },
+    polySize: { width: 300, height: 140 },
+    polyPoints: '20 70, 168 13, 280 70, 135 127',
   },
   {
     id: 73,
@@ -116,7 +154,11 @@ export const MEETING_ROOMS = [
     name: '제주도',
     x: 45,
     y: 38,
+    imgUrl: jeju,
     coords: '692,369,872,299,1009,374,834,444',
+    polyPosition: { x: -190, y: -140 },
+    polySize: { width: 300, height: 140 },
+    polyPoints: '22 70, 168 15, 280 70, 135 127',
   },
   {
     id: 77,
@@ -124,7 +166,11 @@ export const MEETING_ROOMS = [
     name: '태평양',
     x: 40,
     y: 65,
+    imgUrl: teap,
     coords: '478,589,690,497,1047,684,825,771',
+    polyPosition: { x: -325, y: -220 },
+    polySize: { width: 500, height: 250 },
+    polyPoints: '20 86, 185 20, 470 170, 310 235',
   },
   {
     id: 82,
@@ -133,5 +179,8 @@ export const MEETING_ROOMS = [
     x: 16,
     y: 50,
     coords: '56,532,393,396,510,464,184,599',
+    polyPosition: { x: -120, y: -80 },
+    polySize: { width: 430, height: 200 },
+    polyPoints: '23 135, 310 15, 400 65, 120 185',
   },
 ];

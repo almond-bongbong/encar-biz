@@ -2,15 +2,15 @@ export default [
   {
     id: 25730,
     name: 'CS팀 신규입사자 교육',
-    startedAt: '2019-11-25T09:00:00',
-    endedAt: '2019-11-25T14:30:00',
+    startedAt: '2019-11-27T09:00:00',
+    endedAt: '2019-11-27T13:30:00',
     room: { id: 69, name: '19F_오키나와 (중회의실)', floor: 19 },
   },
   {
     id: 25870,
     name: 'hr미팅',
-    startedAt: '2019-11-25T09:40:00',
-    endedAt: '2019-11-25T11:30:00',
+    startedAt: '2019-11-27T09:30:00',
+    endedAt: '2019-11-27T10:30:00',
     room: { id: 85, name: '18F_보라보라 (소회의실)', floor: 18 },
   },
   {
@@ -58,13 +58,6 @@ export default [
       name: '19F_Production Q (중회의실, 미디어편집실)',
       floor: 19,
     },
-  },
-  {
-    id: 25871,
-    name: '워크샵회의',
-    startedAt: '2019-11-25T13:00:00',
-    endedAt: '2019-11-25T17:00:00',
-    room: { id: 85, name: '18F_보라보라 (소회의실)', floor: 18 },
   },
   {
     id: 25872,
