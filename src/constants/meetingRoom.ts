@@ -180,7 +180,7 @@ export const MEETING_ROOMS = [
     y: 50,
     coords: '56,532,393,396,510,464,184,599',
     polyPosition: { x: -120, y: -80 },
-    polySize: { width: 430, height: 200 },
-    polyPoints: '23 135, 310 15, 400 65, 120 185',
+    polySize: { width: 430, height: 190 },
+    polyPoints: '25 132, 312 14, 403 67, 123 184',
   },
 ];
