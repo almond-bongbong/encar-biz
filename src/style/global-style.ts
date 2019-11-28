@@ -11,6 +11,7 @@ export default createGlobalStyle`
     touch-action: manipulation;
   }
   body {
+    overflow: hidden;
     font-family: ${({ theme }): string => theme.primaryFont};
     color: #eee;
     line-height: 1.5;
