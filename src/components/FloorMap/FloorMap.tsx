@@ -121,8 +121,9 @@ const ReservationTitle = styled.div<ReservationTitleProps>`
   padding: 6px 12px;
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.85);
+  font-family: ${({ theme }): string => theme.basicFont};
   color: #000;
-  font-size: 15px;
+  font-size: 16px;
   white-space: nowrap;
   transform: translate(-50%, -60px);
 

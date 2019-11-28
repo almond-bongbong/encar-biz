@@ -12,6 +12,7 @@ export const ADD_30_MINUTES = 'reservation/ADD_30_MINUTES';
 export const MINUS_30_MINUTES = 'reservation/MINUS_30_MINUTES';
 export const SET_RECOMMEND_ROOM_ID = 'reservation/SET_RECOMMEND_ROOM_ID';
 export const SET_SELECTED_ROOM_ID = 'reservation/SET_SELECTED_ROOM_ID';
+export const TOGGLE_SELECTED_ROOM_ID = 'reservation/TOGGLE_SELECTED_ROOM_ID';
 
 export const fetchReservations = createAsyncAction(
   FETCH_RESERVATIONS_REQUEST,
@@ -27,3 +28,6 @@ export const setRecommendRoomId = createStandardAction(SET_RECOMMEND_ROOM_ID)<
 export const setSelectedRoomId = createStandardAction(SET_SELECTED_ROOM_ID)<
   number | null
 >();
+export const toggleSelectedRoomId = createStandardAction(
+  TOGGLE_SELECTED_ROOM_ID,
+)<number | null>();

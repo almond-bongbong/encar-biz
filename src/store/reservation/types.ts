@@ -5,6 +5,7 @@ import {
   selectDateTime,
   setRecommendRoomId,
   setSelectedRoomId,
+  toggleSelectedRoomId,
   FETCH_RESERVATIONS_REQUEST,
 } from './actions';
 import { ActionType } from 'typesafe-actions';
@@ -17,6 +18,7 @@ const actions = {
   minus30Minutes,
   setRecommendRoomId,
   setSelectedRoomId,
+  toggleSelectedRoomId,
 };
 
 export type ReservationAction = ActionType<typeof actions>;

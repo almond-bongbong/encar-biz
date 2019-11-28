@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect } from 'react';
+import React, { memo, SyntheticEvent, useCallback, useEffect } from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import styled from 'styled-components';
 import { addRootElement } from 'lib/generateElement';
@@ -8,7 +8,9 @@ import { CloseIcon } from 'icons';
 interface ModalPopupProps {
   children: React.ReactNode;
   show: boolean;
-  closeHandler?: () => void;
+  closeHandler?: (
+    event: MouseEvent | KeyboardEvent | SyntheticEvent | undefined,
+  ) => void;
 }
 
 const PanelWrapper = styled.div`
@@ -60,7 +62,7 @@ const SidePanel: React.FC<ModalPopupProps> = ({
   const handleKeyPress = useCallback(
     (e: KeyboardEvent): void => {
       if (closeHandler && e.code === 'Escape') {
-        closeHandler();
+        closeHandler(e);
       }
     },
     [closeHandler],
@@ -73,7 +75,7 @@ const SidePanel: React.FC<ModalPopupProps> = ({
         e.target instanceof Element &&
         !e.target.closest('#side-panel-container')
       ) {
-        closeHandler();
+        closeHandler(e);
       }
     },
     [closeHandler],

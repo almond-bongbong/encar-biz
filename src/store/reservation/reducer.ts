@@ -6,6 +6,7 @@ import {
   SELECT_DATETIME,
   SET_RECOMMEND_ROOM_ID,
   SET_SELECTED_ROOM_ID,
+  TOGGLE_SELECTED_ROOM_ID,
 } from './actions';
 import { createReducer } from 'typesafe-actions';
 import { DATETIME_FORMAT } from 'types';
@@ -45,6 +46,11 @@ const reducer = createReducer<ReservationState, ReservationAction>(
     [SET_SELECTED_ROOM_ID]: (state, action) => ({
       ...state,
       selectedRoomId: action.payload,
+    }),
+    [TOGGLE_SELECTED_ROOM_ID]: (state, action) => ({
+      ...state,
+      selectedRoomId:
+        state.selectedRoomId === action.payload ? null : action.payload,
     }),
   },
 );

@@ -23,6 +23,7 @@ import {
   selectDateTime,
   setRecommendRoomId,
   setSelectedRoomId,
+  toggleSelectedRoomId,
 } from 'store/reservation';
 import { DATE_FORMAT, DATETIME_FORMAT, Meeting, Room } from 'types';
 import { RootState } from 'store';
@@ -345,6 +346,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
         .set('hours', selectedDateTimeMoment.get('hours'))
         .set('minutes', selectedDateTimeMoment.get('minutes'))
         .format(DATETIME_FORMAT);
+
       dispatch(selectDateTime(newDateTime));
     }
 
@@ -352,7 +354,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   };
 
   const handleClickRoom = (roomId: number): void => {
-    dispatch(setSelectedRoomId(roomId));
+    dispatch(toggleSelectedRoomId(roomId));
   };
 
   return (
@@ -396,8 +398,14 @@ const Reservation: React.FC<RouteComponentProps> = () => {
 
           <SidePanel
             show={selectedRoomId != null}
-            closeHandler={(): void => {
-              dispatch(setSelectedRoomId(null));
+            closeHandler={(e): void => {
+              if (
+                e &&
+                e.target instanceof Element &&
+                e.target.tagName !== 'AREA'
+              ) {
+                dispatch(setSelectedRoomId(null));
+              }
             }}
           >
             {selectedRoomId && (

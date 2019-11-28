@@ -114,10 +114,11 @@ const ReservationArea = styled.div<ReservationAreaProps>`
   left: 80px;
   right: 20px;
   height: ${({ heightPx }): number => heightPx}px;
-  padding: 5px 10px;
+  padding: 4px 10px;
   border: 1px solid #ddd;
   border-radius: 10px;
   background-color: #fff;
+  font-family: ${({ theme }): string => theme.basicFont};
   font-size: 13px;
   color: #666;
   align-items: center;
@@ -125,6 +126,7 @@ const ReservationArea = styled.div<ReservationAreaProps>`
   & .wrap_text {
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 14px;
     white-space: nowrap;
   }
 
