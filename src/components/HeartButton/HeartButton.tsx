@@ -41,12 +41,22 @@ const Count = styled.div`
 const HeartButton: React.FC = () => {
   const heartRef = useRef<HTMLButtonElement>(null);
   const [likeCount, setLikeCount] = useState(0);
+  const likeCountPullingInterval = useRef<number | null>(null);
+
+  const updateLike = async (): Promise<void> => {
+    const response = await getLikeCount();
+    setLikeCount(response.data.count);
+  };
 
   useEffect(() => {
-    (async (): Promise<void> => {
-      const response = await getLikeCount();
-      setLikeCount(response.data.count);
-    })();
+    updateLike();
+    likeCountPullingInterval.current = setInterval(updateLike, 5 * 1000);
+
+    return (): void => {
+      if (likeCountPullingInterval.current) {
+        clearInterval(likeCountPullingInterval.current);
+      }
+    };
   }, []);
 
   const startAnimate = async (): Promise<void> => {
