@@ -50,7 +50,7 @@ const HeartButton: React.FC = () => {
 
   useEffect(() => {
     updateLike();
-    likeCountPullingInterval.current = setInterval(updateLike, 5 * 1000);
+    likeCountPullingInterval.current = window.setInterval(updateLike, 5 * 1000);
 
     return (): void => {
       if (likeCountPullingInterval.current) {

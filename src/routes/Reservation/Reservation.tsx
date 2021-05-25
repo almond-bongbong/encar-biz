@@ -179,7 +179,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
   const { floor } = qs.parse(search);
   const currentFloor = parseInt(floor ? floor.toString() : '18');
   const sliderIndex = currentFloor === 18 ? 1 : 0;
-  const slider = useRef<Slider>(null);
+  const slider = useRef<Slider | null>(null);
   const dispatch = useDispatch();
   const [selectedDateTimeInterval, setSelectedDateTimeInterval] = useState<
     number | null
@@ -219,9 +219,9 @@ const Reservation: React.FC<RouteComponentProps> = () => {
 
   useEffect(() => {
     dispatch(fetchReservations.request(selectedDate));
-    fetchReservationsInterval.current = setInterval(() => {
+    fetchReservationsInterval.current = window.setInterval(() => {
       dispatch(fetchReservations.request(selectedDate));
-    }, 30 * 1000);
+    }, 60 * 1000);
 
     return (): void => {
       if (fetchReservationsInterval.current) {
@@ -240,7 +240,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
 
   const startInterval = useCallback((): void => {
     setSelectedDateTimeInterval(
-      setInterval(() => {
+      window.setInterval(() => {
         dispatch(selectDateTime(moment().format(DATETIME_FORMAT)));
       }, 1000),
     );
@@ -256,7 +256,7 @@ const Reservation: React.FC<RouteComponentProps> = () => {
       setEventLivingTimer(null);
     }
     setEventLivingTimer(
-      setTimeout(() => {
+      window.setTimeout(() => {
         dispatch(setSelectedRoomId(null));
         startInterval();
       }, 60 * 1000),
