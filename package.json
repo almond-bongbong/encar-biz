@@ -7,7 +7,7 @@
     "express": "^4.17.1",
     "image-map": "^1.1.7",
     "ismobilejs": "^1.0.3",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "pm2": "^4.2.0",
