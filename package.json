@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^1.7.7",
-    "express": "^4.19.2",
+    "express": "^4.21.1",
     "image-map": "^1.1.7",
     "ismobilejs": "^1.0.3",
     "jquery": "^3.5.0",
